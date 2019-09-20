@@ -1,10 +1,10 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
-
+#include <SDL.h>
 #include "structs.h"
 
-void eventCheck(bool &end, bool &restart);
+void eventCheck(bool &end, bool &restart, Menu &menu, SDL_Point);
 
-Mouse getMouseXY(Mouse mouse);
+SDL_Point getMouseXY(SDL_Point mouse);
 
 #endif // CONTROLS_H

@@ -1,14 +1,10 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-struct Mouse {
-    int x;
-    int y;
-};
-
 struct Barrel {
     int x;
     int y;
+    int skin;
 };
 
 struct Angle {
@@ -39,6 +35,13 @@ struct CarPiece {
     Speed speed;
     Angle angle;
     bool broke;
+};
+
+struct Menu {
+    int y;
+    int state;
+    Speed speed;
+    bool animate;
 };
 
 #endif // STRUCTS_H

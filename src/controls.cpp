@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "structs.h"
 
-void eventCheck(bool &end, bool &restart){
+void eventCheck(bool &end, bool &restart, Menu &menu, SDL_Point mouse){
     SDL_Event gameEvent;
     while(SDL_PollEvent(&gameEvent)){
         switch(gameEvent.type){
@@ -14,7 +14,27 @@ void eventCheck(bool &end, bool &restart){
                         restart = true;
                     break;
                     case SDLK_ESCAPE:
-                        end = true;
+                        menu.state = 1;
+                    break;
+                }
+            break;
+            case SDL_MOUSEBUTTONDOWN:
+                switch(gameEvent.button.button){
+                    case SDL_BUTTON_LEFT:
+                    SDL_Rect test = {250, 200, 300, 100};
+                    if(SDL_PointInRect(&mouse, &test)){
+                            //menu.state = 0;
+                            restart = true;
+                            menu.animate = true;
+                    }
+                    test = {300, 350, 200, 75};
+                    if(SDL_PointInRect(&mouse, &test)){
+                            end = true;
+                    }
+                    test = {300, 475, 200, 75};
+                    if(SDL_PointInRect(&mouse, &test)){
+                            end = true;
+                    }
                     break;
                 }
             break;
@@ -22,12 +42,7 @@ void eventCheck(bool &end, bool &restart){
     }
 }
 
-Mouse getMouseXY(Mouse mouse){
+SDL_Point getMouseXY(SDL_Point mouse){
     SDL_GetMouseState(&mouse.x, &mouse.y);
-    if(mouse.y < 95){
-        mouse.y = 95;
-    } else if (mouse.y > 530){
-        mouse.y = 530;
-    }
     return {mouse.x, mouse.y};
 }
