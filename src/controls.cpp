@@ -46,3 +46,18 @@ SDL_Point getMouseXY(SDL_Point mouse){
     SDL_GetMouseState(&mouse.x, &mouse.y);
     return {mouse.x, mouse.y};
 }
+
+void carControl(Car &car, SDL_Point mouse){
+    car.y += (mouse.y - car.y)/10;
+    car.angle.value = (mouse.y - car.y)/5;
+    if(mouse.x > car.x){
+        car.x += (mouse.x - car.x)/10;
+    } else if (mouse.x < car.x){
+        car.x -= (car.x - mouse.x)/10;
+    }
+    if(car.y < 70){
+        car.y = 70;
+    } else if (car.y > 510){
+        car.y = 510;
+    }
+}

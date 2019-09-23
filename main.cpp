@@ -11,24 +11,6 @@
 #include "menu.h"
 using namespace std;
 
-void carControl(Car &car, SDL_Point mouse){
-    if(mouse.y > car.y){
-        car.y += (mouse.y - car.y)/10;
-    } else if (mouse.y < car.y){
-        car.y -= (car.y - mouse.y)/10;
-    }
-    if(mouse.x > car.x){
-        car.x += (mouse.x - car.x)/10;
-    } else if (mouse.x < car.x){
-        car.x -= (car.x - mouse.x)/10;
-    }
-    if(car.y < 70){
-        car.y = 70;
-    } else if (car.y > 510){
-        car.y = 510;
-    }
-}
-
 bool collide(SDL_Rect first, SDL_Rect second){
     if(first.x + first.w > second.x && first.x < second.x + second.w && first.y < second.y + second.h && first.y + first.h > second.y){
         return true;
@@ -86,11 +68,25 @@ int main(){
         if(menu.state == 0){
             //-----CLEAR-----
             SDL_RenderClear(render);
+            //==========================RESTART==========================
+            if(restart == true){
+                carState = 3;
+                road.speed.x = 20;
+                barrel.x = 1500;
+                carHood = {0, 0, {0, 0}, {0, 0}, false};
+                pieces[0] = {0, 0, {0, 0}, {0, 0}, false};
+                pieces[1] = {0, 0, {0, 0}, {0, 0}, false};
+                pieces[2] = {0, 0, {0, 0}, {0, 0}, false};
+                score = 0;
+                road.x = 0;
+                lamp.x = 800;
+                restart = false;
+            }
             if(carState > 0){
                 carControl(car, mouse);
             }
             //==========================RECTS==========================
-            SDL_Rect carPos = {static_cast<int>(car.x - 50), static_cast<int>(car.y - 25), 444/3, 212/3};
+            SDL_Rect carPos = {static_cast<int>(car.x - 100), static_cast<int>(car.y - 25), 444/3, 212/3};
             SDL_Rect barrelPos = {barrel.x, barrel.y, 54, 74};
 
             //==========================DRAWING==========================
@@ -117,19 +113,6 @@ int main(){
             if(collide(carPos, barrelPos)){
                 carState--;
                 barrel.x = 1500;
-            }
-            if(restart == true){
-                carState = 3;
-                road.speed.x = 20;
-                barrel.x = 1500;
-                carHood = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[0] = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[1] = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[2] = {0, 0, {0, 0}, {0, 0}, false};
-                score = 0;
-                road.x = 0;
-                lamp.x = 800;
-                restart = false;
             }
             //=========================================================MENU=========================================================
         } else if(menu.state == 1){

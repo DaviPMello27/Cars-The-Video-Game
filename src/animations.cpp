@@ -9,7 +9,7 @@ void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprit
         piece.speed.x = rand() % 5 + 10;
         piece.speed.y = rand() % 10 - 5;
         piece.angle.speed = rand() % 10 + 30;
-        piece.x = car.x + 60;
+        piece.x = car.x + 20;
         piece.y = car.y;
         pos.x = piece.x;
         pos.y = piece.y;
@@ -91,7 +91,7 @@ void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos
 
     SDL_RenderCopy(render, bgRoad, &roadCut, &roadPos);
     if(carState > 0){
-        SDL_RenderCopy(render, carSprite, &carCut, &carPos);
+        SDL_RenderCopyEx(render, carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
     } else {
         carCrash(car, carState);
         carPos = {car.x - 61, car.y - 50, 444/3, 212/3};
