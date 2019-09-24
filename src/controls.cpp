@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "structs.h"
 
-void eventCheck(bool &end, bool &restart, Menu &menu, SDL_Point mouse){
+void eventCheck(bool &end, bool &restart, bool &changeRes, Menu &menu, SDL_Point mouse, Screen screen){
     SDL_Event gameEvent;
     while(SDL_PollEvent(&gameEvent)){
         switch(gameEvent.type){
@@ -13,25 +13,30 @@ void eventCheck(bool &end, bool &restart, Menu &menu, SDL_Point mouse){
                     case SDLK_r:
                         restart = true;
                     break;
+                    case SDLK_q:
+                        end = true;
+                    break;
                     case SDLK_ESCAPE:
                         menu.state = 1;
+                    break;
+                    case SDLK_e:
+                        changeRes = true;
                     break;
                 }
             break;
             case SDL_MOUSEBUTTONDOWN:
                 switch(gameEvent.button.button){
                     case SDL_BUTTON_LEFT:
-                    SDL_Rect test = {250, 200, 300, 100};
+                    SDL_Rect test = {static_cast<int>((screen.w / 2) - 150), static_cast<int>(200 - menu.y), 300, 100};
                     if(SDL_PointInRect(&mouse, &test)){
-                            //menu.state = 0;
                             restart = true;
                             menu.animate = true;
                     }
-                    test = {300, 350, 200, 75};
+                    test = {static_cast<int>((screen.w / 2) - 100), static_cast<int>(350 - menu.y), 200, 75};
                     if(SDL_PointInRect(&mouse, &test)){
                             end = true;
                     }
-                    test = {300, 475, 200, 75};
+                    test = {static_cast<int>((screen.w / 2) - 100), static_cast<int>(475 - menu.y), 200, 75};
                     if(SDL_PointInRect(&mouse, &test)){
                             end = true;
                     }
@@ -47,7 +52,7 @@ SDL_Point getMouseXY(SDL_Point mouse){
     return {mouse.x, mouse.y};
 }
 
-void carControl(Car &car, SDL_Point mouse){
+void carControl(Car &car, SDL_Point mouse, Screen screen){
     car.y += (mouse.y - car.y)/10;
     car.angle.value = (mouse.y - car.y)/5;
     if(mouse.x > car.x){
@@ -55,9 +60,9 @@ void carControl(Car &car, SDL_Point mouse){
     } else if (mouse.x < car.x){
         car.x -= (car.x - mouse.x)/10;
     }
-    if(car.y < 70){
-        car.y = 70;
-    } else if (car.y > 510){
-        car.y = 510;
+    if(car.y < static_cast<int>(70*screen.hScale)){
+        car.y = static_cast<int>(70*screen.hScale);
+    } else if (car.y > static_cast<int>(screen.w - 90*screen.hScale)){
+        car.y = static_cast<int>(screen.w - 90*screen.hScale);
     }
 }

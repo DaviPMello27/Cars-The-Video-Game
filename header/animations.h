@@ -7,11 +7,11 @@ void carBreak(CarPiece &piece, SDL_Point mouse, SDL_Renderer *render, SDL_Textur
 
 void carCrash(Car &car, int &carState);
 
-int roadLoop(Road &road, int carState);
+int roadLoop(Road &road, int carState, Screen screen);
 
-int barrelLoop(Barrel &barrel, int &score);
+int barrelLoop(Barrel &barrel, int &score, int screenWidth);
 
-void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, SDL_Texture *carPieces, SDL_Texture *carHoodSprite);
+void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img img, Screen screen);
 
-void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect barrelPos, Car &car, Barrel barrel, SDL_Texture *bgRoad, SDL_Texture *carSprite, SDL_Texture *barrelSprite);
+void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect barrelPos, Car &car, Barrel barrel, Img img, Screen screen);
 #endif // ANIMATIONS_H

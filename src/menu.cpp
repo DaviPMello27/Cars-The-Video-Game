@@ -12,20 +12,20 @@ void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, i
     SDL_RenderFillRect(render, &button);
 }
 
-void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, SDL_Texture *bgRoad, SDL_Texture *font, Car &car, int &carState){
+void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen){
     SDL_Rect bgCut = {0, 0, 800, 600};
-    SDL_RenderCopy(render, bgRoad, &bgCut, nullptr);
+    SDL_RenderCopy(render, img.bgRoad, &bgCut, nullptr);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(render, 0, 0, 0, 128);
-    bgCut = {0, static_cast<int>(0 - menu.y), 800, 600};
+    bgCut = {0, static_cast<int>(0 - menu.y), screen.w, screen.h};
     SDL_RenderFillRect(render, &bgCut);
-    writeText(render, "CARS: THE MOVIE: THE GAME", font, 65, static_cast<int>(100 - menu.y));
-    createButton(render, mouse, 250, static_cast<int>(200 - menu.y), 300, 100);
-    writeText(render, "START", font, 300, static_cast<int>(222 - menu.y), 44, 72);
-    createButton(render, mouse, 300, static_cast<int>(350 - menu.y), 200, 75);
-    writeText(render, "Options", font, 311, static_cast<int>(370 - menu.y));
-    createButton(render, mouse, 300, static_cast<int>(475 - menu.y), 200, 75);
-    writeText(render, "Quit", font, 350, static_cast<int>(495 - menu.y));
+    writeText(render, "CARS: THE MOVIE: THE GAME", img.font, static_cast<int>((screen.w / 2) - 330), static_cast<int>(100 - menu.y));
+    createButton(render, mouse, static_cast<int>((screen.w / 2) - 150), static_cast<int>(200 - menu.y), 300, 100);
+    writeText(render, "START", img.font, static_cast<int>((screen.w / 2) - 100), static_cast<int>(222 - menu.y), 44, 72);
+    createButton(render, mouse, static_cast<int>((screen.w / 2) - 100), static_cast<int>(350 - menu.y), 200, 75);
+    writeText(render, "Options", img.font, static_cast<int>((screen.w / 2) - 89), static_cast<int>(370 - menu.y));
+    createButton(render, mouse, static_cast<int>((screen.w / 2) - 100), static_cast<int>(475 - menu.y), 200, 75);
+    writeText(render, "Quit", img.font, static_cast<int>((screen.w / 2) - 50), static_cast<int>(495 - menu.y));
     if(menu.animate){
         menu.y += menu.speed.y;
         menu.speed.y *= 1.2;

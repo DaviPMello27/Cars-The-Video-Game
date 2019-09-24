@@ -4,10 +4,10 @@
 #include <iostream>
 
 
-void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprite, SDL_Rect cut, SDL_Rect pos){
+void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprite, SDL_Rect cut, SDL_Rect pos, Screen screen){
     if(!piece.broke){
-        piece.speed.x = rand() % 5 + 10;
-        piece.speed.y = rand() % 10 - 5;
+        piece.speed.x = (rand() % 5 + 10)*screen.wScale;
+        piece.speed.y = (rand() % 10 - 5)*screen.hScale;
         piece.angle.speed = rand() % 10 + 30;
         piece.x = car.x + 20;
         piece.y = car.y;
@@ -23,11 +23,11 @@ void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprit
     piece.angle.speed /= 1.1;
 }
 
-void carCrash(Car &car, int &carState){
+void carCrash(Car &car, int &carState, Screen screen){
     if(carState == 0){
         car.angle.speed = rand() % 5 + 20;
-        car.speed.y = rand() % 20 - 10;
-        car.speed.x = 10;
+        car.speed.y = (rand() % 20 - 10)*screen.hScale;
+        car.speed.x = 10*screen.wScale;
         carState = -1;
     }
     car.angle.value += car.angle.speed;
@@ -42,12 +42,12 @@ void carCrash(Car &car, int &carState){
     }
 }
 
-void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, SDL_Texture *carPieces, SDL_Texture *carHoodSprite){
+void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img img, Screen screen){
     if(carState == 2 || carState == 1){
         for(int i = 0; i < 3; i++){
             SDL_Rect carPieceCut = {i*20, 0, 20, 12};
-            SDL_Rect carPiecePos = {pieces[i].x, pieces[i].y, 20/2, 12/2};
-            carBreak(pieces[i], car, render, carPieces, carPieceCut, carPiecePos);
+            SDL_Rect carPiecePos = {pieces[i].x, pieces[i].y, static_cast<int>((20/2) * screen.wScale), static_cast<int>((12/2) * screen.wScale)};
+            carBreak(pieces[i], car, render, img.carPieces, carPieceCut, carPiecePos, screen);
         }
     }
     if(carState == 1 && carHood.x > -50){
@@ -57,47 +57,47 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
             }
         }
         SDL_Rect carHoodCut = {0, 0, 140, 140};
-        SDL_Rect carHoodPos = {carHood.x, carHood.y, 140/3, 140/3};
-        carBreak(carHood, car, render, carHoodSprite, carHoodCut, carHoodPos);
+        SDL_Rect carHoodPos = {carHood.x, carHood.y, static_cast<int>((140/3) * screen.wScale), static_cast<int>((140/3) * screen.wScale)};
+        carBreak(carHood, car, render, img.carHoodSprite, carHoodCut, carHoodPos, screen);
     }
 }
 
-int roadLoop(Road &road, int carState){
-    if(road.x >= 2300){
+int roadLoop(Road &road, int carState, Screen screen){
+    if(road.x >= 3100-screen.w){
         return 0;
     }
     if(carState > 0){
-        return static_cast<int>(road.x + road.speed.x);
+        return static_cast<int>(road.x + road.speed.x * screen.wScale);
     } else {
         road.speed.x /= 1.03;
-        return static_cast<int>(road.x + road.speed.x);
+        return static_cast<int>(road.x + road.speed.x * screen.wScale);
     }
 }
 
-int barrelLoop(Barrel &barrel, int &score){
+int barrelLoop(Barrel &barrel, int &score, int screenWidth){
     if(barrel.x < 0){
         barrel.y = rand() % 410 + 50;
         barrel.skin = rand() % 2;
         score++;
-        return 1000;
+        return screenWidth + 200;
     }
-    return barrel.x - 20;
+    return static_cast<int>(barrel.x - 20 * screenWidth/800);
 }
 
-void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect barrelPos, Car &car, Barrel barrel, SDL_Texture *bgRoad, SDL_Texture *carSprite, SDL_Texture *barrelSprite){
+void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect barrelPos, Car &car, Barrel barrel, Img img, Screen screen){
     SDL_Rect carCut = {0, (3-carState)*212, 444, 212};
-    SDL_Rect roadCut = {road.x, 0, 800, 600};
-    SDL_Rect roadPos = {0, 0, 800, 600};
+    SDL_Rect roadCut = {road.x, 0, screen.w, 600};
+    SDL_Rect roadPos = {0, 0, screen.w, screen.h};
 
-    SDL_RenderCopy(render, bgRoad, &roadCut, &roadPos);
+    SDL_RenderCopy(render, img.bgRoad, &roadCut, &roadPos);
     if(carState > 0){
-        SDL_RenderCopyEx(render, carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(render, img.carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
     } else {
-        carCrash(car, carState);
-        carPos = {car.x - 61, car.y - 50, 444/3, 212/3};
+        carCrash(car, carState, screen);
+        carPos = {car.x - 61, car.y - 50, static_cast<int>((444/3)*screen.wScale), static_cast<int>((212/3)*(screen.wScale))};
         carCut = {0, 424, 444, 212};
-        SDL_RenderCopyEx(render, carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(render, img.carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
     }
     SDL_Rect barrelCut = {barrel.skin * 54, 0, 54, 74};
-    SDL_RenderCopy(render, barrelSprite, &barrelCut, &barrelPos);
+    SDL_RenderCopy(render, img.barrelSprite, &barrelCut, &barrelPos);
 }

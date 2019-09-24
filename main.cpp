@@ -18,11 +18,11 @@ bool collide(SDL_Rect first, SDL_Rect second){
     return false;
 }
 
-int lampLoop(SDL_Point &lamp, Road road){
+int lampLoop(SDL_Point &lamp, Road road, Screen screen){
     if(lamp.x < -800){
-        return 1600;
+        return screen.w + 800;
     }
-    return lamp.x - static_cast<int>(road.speed.x);
+    return lamp.x - static_cast<int>(road.speed.x * screen.wScale);
 }
 
 void drawCursor(SDL_Renderer *render, SDL_Point mouse, SDL_Texture *cursor){
@@ -34,11 +34,12 @@ int main(){
     //==========================INIT==========================
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
-    SDL_Window *mainWindow = SDL_CreateWindow("SUPER CAR RACER THE MOVIE THE GAME 2000", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+    SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
     SDL_Renderer *render = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
     srand(static_cast<unsigned int>(time(nullptr)));
 
     //==========================VARIABLES==========================
+    Screen screen = {800, 600, 0, 0, false};
     Road road = {0, {20, 0}};
     Car car = {0, 0, {0, 0}, {0, 0}};
     SDL_Point mouse, lamp = {800, 0};
@@ -47,22 +48,31 @@ int main(){
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
     int carState = 3, score = 0;
-    bool end = false, restart = false;
+    bool end = false, restart = false, changeRes = false;
     //==========================TEXTURES==========================
-    SDL_Texture *carSprite = IMG_LoadTexture(render, "img/car.png");
-    SDL_Texture *carPieces = IMG_LoadTexture(render, "img/carPieces.png");
-    SDL_Texture *carHoodSprite = IMG_LoadTexture(render, "img/carHood.png");
-    SDL_Texture *bgRoad = IMG_LoadTexture(render, "img/road.png");
-    SDL_Texture *barrelSprite = IMG_LoadTexture(render, "img/barrel.png");
-    SDL_Texture *font = IMG_LoadTexture(render, "img/font.png");
-    SDL_Texture *cursor = IMG_LoadTexture(render, "img/cursor.png");
-    SDL_Texture *lampSprite = IMG_LoadTexture(render, "img/lamp.png");
+    Img img;
+    img.carSprite = IMG_LoadTexture(render, "img/car.png");
+    img.carPieces = IMG_LoadTexture(render, "img/carPieces.png");
+    img.carHoodSprite = IMG_LoadTexture(render, "img/carHood.png");
+    img.bgRoad = IMG_LoadTexture(render, "img/road.png");
+    img.barrelSprite = IMG_LoadTexture(render, "img/barrel.png");
+    img.font = IMG_LoadTexture(render, "img/font.png");
+    img.cursor = IMG_LoadTexture(render, "img/cursor.png");
+    img.lampSprite = IMG_LoadTexture(render, "img/lamp.png");
     //==========================GAME-LOOP==========================
     while (!end){
         SDL_ShowCursor(SDL_DISABLE);
         //-----EVENT-----
-        eventCheck(end, restart, menu, mouse);
-
+        eventCheck(end, restart, changeRes, menu, mouse, screen);
+        //==========================RESOLUTION==========================
+        screen.wScale = screen.w/800.0;
+        screen.hScale = screen.h/600.0;
+        if(changeRes){
+            screen.w = 1240;
+            screen.h = 720;
+            changeRes = false;
+            SDL_SetWindowSize(mainWindow, screen.w, screen.h);
+        }
         //==========================MOUSE==========================
         mouse = getMouseXY(mouse);
         if(menu.state == 0){
@@ -83,42 +93,43 @@ int main(){
                 restart = false;
             }
             if(carState > 0){
-                carControl(car, mouse);
+                carControl(car, mouse, screen);
             }
             //==========================RECTS==========================
-            SDL_Rect carPos = {static_cast<int>(car.x - 100), static_cast<int>(car.y - 25), 444/3, 212/3};
-            SDL_Rect barrelPos = {barrel.x, barrel.y, 54, 74};
+            SDL_Rect carPos = {static_cast<int>(car.x - 100), static_cast<int>(car.y - 25), static_cast<int>((444/3)*screen.wScale), static_cast<int>((212/3)*(screen.wScale))};
+            SDL_Rect barrelPos = {barrel.x, barrel.y, static_cast<int>(54*screen.wScale), static_cast<int>(74*screen.hScale)};
 
             //==========================DRAWING==========================
-            drawSprites(render, carState, road, carPos, barrelPos, car, barrel, bgRoad, carSprite, barrelSprite);
+            drawSprites(render, carState, road, carPos, barrelPos, car, barrel, img, screen);
+
             //==========================CAR=PIECES=ANIMATIONS==========================
-            drawAnimation(render, carState, pieces, car, carHood, carPieces, carHoodSprite);
+            drawAnimation(render, carState, pieces, car, carHood, img, screen);
 
             //==========================ROADLOOP==========================
-            road.x = roadLoop(road, carState);
+            road.x = roadLoop(road, carState, screen);
 
             //==========================BARREL=LOOP==========================
             if(carState > 0){
-                barrel.x = barrelLoop(barrel, score);
+                barrel.x = barrelLoop(barrel, score, screen.w);
             }
             //==========================LAMP=LOOP==========================
-            lamp.x = lampLoop(lamp, road);
-            SDL_Rect lampPos = {lamp.x, 0, 600, 600};
-            SDL_RenderCopy(render, lampSprite, nullptr, &lampPos);
+            lamp.x = lampLoop(lamp, road, screen);
+            SDL_Rect lampPos = {lamp.x, 0, static_cast<int>(600*screen.wScale), static_cast<int>(600*screen.wScale)};
+            SDL_RenderCopy(render, img.lampSprite, nullptr, &lampPos);
 
             //==========================WRITE=SCORE==========================
-            writeText(render, score, font, 370, 30);
+            writeText(render, score, img.font, static_cast<int>((screen.w / 2) - 30), 30);
 
             //==========================HITBOXES==========================
             if(collide(carPos, barrelPos)){
                 carState--;
-                barrel.x = 1500;
+                barrel.x = screen.w + 500;
             }
             //=========================================================MENU=========================================================
-        } else if(menu.state == 1){
-            drawMenu(render, menu, mouse, bgRoad, font, car, carState);
+        } else if(menu.state > 0){
+            drawMenu(render, menu, mouse, img, car, carState, screen);
         }
-        drawCursor(render, mouse, cursor);
+        drawCursor(render, mouse, img.cursor);
         SDL_RenderPresent(render);
         SDL_Delay(1000/60);
     }
@@ -126,14 +137,14 @@ int main(){
     //==========================DESTROY==========================
     SDL_DestroyWindow(mainWindow);
     SDL_DestroyRenderer(render);
-    SDL_DestroyTexture(carSprite);
-    SDL_DestroyTexture(bgRoad);
-    SDL_DestroyTexture(barrelSprite);
-    SDL_DestroyTexture(carPieces);
-    SDL_DestroyTexture(carHoodSprite);
-    SDL_DestroyTexture(font);
-    SDL_DestroyTexture(cursor);
-    SDL_DestroyTexture(lampSprite);
+    SDL_DestroyTexture(img.carSprite);
+    SDL_DestroyTexture(img.bgRoad);
+    SDL_DestroyTexture(img.barrelSprite);
+    SDL_DestroyTexture(img.carPieces);
+    SDL_DestroyTexture(img.carHoodSprite);
+    SDL_DestroyTexture(img.font);
+    SDL_DestroyTexture(img.cursor);
+    SDL_DestroyTexture(img.lampSprite);
     SDL_Quit();
     return 0;
 }

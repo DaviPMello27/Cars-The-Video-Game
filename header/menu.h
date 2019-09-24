@@ -6,7 +6,7 @@
 
 void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, int h);
 
-void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, SDL_Texture *bgRoad, SDL_Texture *font, Car &car, int &carState);
+void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen);
 
 
 #endif // MENU_H
