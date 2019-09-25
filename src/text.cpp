@@ -12,7 +12,7 @@ void writeText(SDL_Renderer *render, int text, SDL_Texture *font, int x, int y){
     }
 }
 
-void writeText(SDL_Renderer *render, const char text[], SDL_Texture *font, int x, int y, int w = 28, int h = 48){
+void writeText(SDL_Renderer *render, std::string text, SDL_Texture *font, int x, int y, int w = 28, int h = 48){
     int i = 0;
     while(text[i] != 0){
         SDL_Rect textCut = {(text[i] - 48) * 16, 0, 16, 24};

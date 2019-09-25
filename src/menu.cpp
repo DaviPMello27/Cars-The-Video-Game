@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <iostream>
 #include "structs.h"
 #include "text.h"
 #include "toi.h"
@@ -41,18 +42,21 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
             }
         }
     } else if(menu.state == 2){
-        bgCut = {screen.w/8, screen.h/5, toi(screen.w*0.75), toi(screen.h*0.75)};
-        writeText(render, "Options", img.font, toi((screen.w / 2.0f) - 140), (bgCut.y - 100), 44, 72);
+        bgCut = {screen.w/2 - 300, screen.h/2 - 200, 600, 450};
+        writeText(render, "Options", img.font, toi((screen.w / 2.0f) - 140), 10, 44, 72);
         SDL_SetRenderDrawColor(render, 255, 255, 255, 32);
         SDL_RenderFillRect(render, &bgCut);
         writeText(render, "Resolution:", img.font, (bgCut.x + bgCut.w/20), (bgCut.y + bgCut.h/15), 20, 28);
         for(int i = 0; i < 13; i++){
+            std::string text = res[0][i] + "x" + res[1][i];
             if(i < 6){
-                createButton(render, mouse, (bgCut.x + bgCut.w/20), (bgCut.y + bgCut.h/5 + bgCut.h/8 * i), (bgCut.w/4), (bgCut.h/8));
-
+                createButton(render, mouse, (bgCut.x + bgCut.w/20), (bgCut.y + bgCut.h/5 + bgCut.h/8 * i), 150, 50);
+                writeText(render, text, img.font, (bgCut.x + bgCut.w/20 + 22), (bgCut.y + toi(bgCut.h/4.2) + bgCut.h/8 * i), 16, 24);
             } else {
-                createButton(render, mouse, toi(bgCut.x + bgCut.w*0.4), (bgCut.y + bgCut.h/5 + bgCut.h/8 * (i - 6) - bgCut.h/8), (bgCut.w/4), (bgCut.h/8));
+                createButton(render, mouse, toi(bgCut.x + bgCut.w*0.4), (bgCut.y + bgCut.h/5 + bgCut.h/8 * (i - 6) - bgCut.h/8), 150, 50);
+                writeText(render, text, img.font, toi(bgCut.x + bgCut.w*0.4 + 22), (bgCut.y + toi(bgCut.h/4.2) + bgCut.h/8 * (i - 6) - bgCut.h/8), 16, 24);
             }
         }
+        writeText(render, "< Back", img.font, 25, (screen.h - 50));
     }
 }

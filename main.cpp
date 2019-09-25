@@ -53,17 +53,17 @@ int main(){
     while (!end){
         SDL_ShowCursor(SDL_DISABLE);
         //-----EVENT-----
-        eventCheck(end, restart, changeRes, menu, mouse, screen);
+        eventCheck(mainWindow, end, restart, changeRes, menu, mouse, screen);
 
         //==========================RESOLUTION==========================
         screen.wScale = screen.w/800.0;
         screen.hScale = screen.h/600.0;
-        if(changeRes){
+        /*if(changeRes){
             screen.w = 1240;
             screen.h = 720;
             changeRes = false;
             SDL_SetWindowSize(mainWindow, screen.w, screen.h);
-        }
+        }*/
 
         //==========================MOUSE==========================
         mouse = getMouseXY(mouse);
