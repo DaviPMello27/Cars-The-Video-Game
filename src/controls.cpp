@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include "structs.h"
+#include "toi.h"
 
 void eventCheck(bool &end, bool &restart, bool &changeRes, Menu &menu, SDL_Point mouse, Screen screen){
     SDL_Event gameEvent;
@@ -27,16 +28,16 @@ void eventCheck(bool &end, bool &restart, bool &changeRes, Menu &menu, SDL_Point
             case SDL_MOUSEBUTTONDOWN:
                 switch(gameEvent.button.button){
                     case SDL_BUTTON_LEFT:
-                    SDL_Rect test = {static_cast<int>((screen.w / 2) - 150), static_cast<int>(200 - menu.y), 300, 100};
+                    SDL_Rect test = {(screen.w / 2) - 150, (200 - menu.y), 300, 100};
                     if(SDL_PointInRect(&mouse, &test)){
                             restart = true;
                             menu.animate = true;
                     }
-                    test = {static_cast<int>((screen.w / 2) - 100), static_cast<int>(350 - menu.y), 200, 75};
+                    test = {(screen.w / 2) - 100, (350 - menu.y), 200, 75};
                     if(SDL_PointInRect(&mouse, &test)){
-                            end = true;
+                            menu.state = 2;
                     }
-                    test = {static_cast<int>((screen.w / 2) - 100), static_cast<int>(475 - menu.y), 200, 75};
+                    test = {(screen.w / 2) - 100, (475 - menu.y), 200, 75};
                     if(SDL_PointInRect(&mouse, &test)){
                             end = true;
                     }
@@ -60,9 +61,9 @@ void carControl(Car &car, SDL_Point mouse, Screen screen){
     } else if (mouse.x < car.x){
         car.x -= (car.x - mouse.x)/10;
     }
-    if(car.y < static_cast<int>(70*screen.hScale)){
-        car.y = static_cast<int>(70*screen.hScale);
-    } else if (car.y > static_cast<int>(screen.w - 90*screen.hScale)){
-        car.y = static_cast<int>(screen.w - 90*screen.hScale);
+    if(car.y < toi(70*screen.hScale)){
+        car.y = toi(70*screen.hScale);
+    } else if (car.y > toi(screen.w - 90*screen.hScale)){
+        car.y = toi(screen.w - 90*screen.hScale);
     }
 }

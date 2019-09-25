@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <random>
 #include "structs.h"
+#include "toi.h"
 #include <iostream>
 
 
@@ -46,7 +47,7 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
     if(carState == 2 || carState == 1){
         for(int i = 0; i < 3; i++){
             SDL_Rect carPieceCut = {i*20, 0, 20, 12};
-            SDL_Rect carPiecePos = {pieces[i].x, pieces[i].y, static_cast<int>((20/2) * screen.wScale), static_cast<int>((12/2) * screen.wScale)};
+            SDL_Rect carPiecePos = {pieces[i].x, pieces[i].y, toi((20/2) * screen.hScale), toi((12/2) * screen.hScale)};
             carBreak(pieces[i], car, render, img.carPieces, carPieceCut, carPiecePos, screen);
         }
     }
@@ -57,7 +58,7 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
             }
         }
         SDL_Rect carHoodCut = {0, 0, 140, 140};
-        SDL_Rect carHoodPos = {carHood.x, carHood.y, static_cast<int>((140/3) * screen.wScale), static_cast<int>((140/3) * screen.wScale)};
+        SDL_Rect carHoodPos = {carHood.x, carHood.y, toi((140/3) * screen.wScale), toi((140/3) * screen.wScale)};
         carBreak(carHood, car, render, img.carHoodSprite, carHoodCut, carHoodPos, screen);
     }
 }
@@ -67,10 +68,10 @@ int roadLoop(Road &road, int carState, Screen screen){
         return 0;
     }
     if(carState > 0){
-        return static_cast<int>(road.x + road.speed.x * screen.wScale);
+        return toi(road.x + road.speed.x * screen.wScale);
     } else {
         road.speed.x /= 1.03;
-        return static_cast<int>(road.x + road.speed.x * screen.wScale);
+        return toi(road.x + road.speed.x * screen.wScale);
     }
 }
 
@@ -81,7 +82,19 @@ int barrelLoop(Barrel &barrel, int &score, int screenWidth){
         score++;
         return screenWidth + 200;
     }
-    return static_cast<int>(barrel.x - 20 * screenWidth/800);
+    return toi(barrel.x - 20.0 * screenWidth/800.0);
+}
+
+int lampLoop(SDL_Point &lamp, Road road, Screen screen){
+    if(lamp.x < -800){
+        return screen.w + 800;
+    }
+    return lamp.x - toi(road.speed.x * screen.wScale);
+}
+
+void drawCursor(SDL_Renderer *render, SDL_Point mouse, SDL_Texture *cursor){
+    SDL_Rect cursorPos = {mouse.x - 15, mouse.y - 15, 30, 30};
+    SDL_RenderCopy(render, cursor, nullptr, &cursorPos);
 }
 
 void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect barrelPos, Car &car, Barrel barrel, Img img, Screen screen){
@@ -94,7 +107,7 @@ void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos
         SDL_RenderCopyEx(render, img.carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
     } else {
         carCrash(car, carState, screen);
-        carPos = {car.x - 61, car.y - 50, static_cast<int>((444/3)*screen.wScale), static_cast<int>((212/3)*(screen.wScale))};
+        carPos = {car.x - 61, car.y - 50, toi((444/3)*screen.hScale), toi((212/3)*(screen.hScale))};
         carCut = {0, 424, 444, 212};
         SDL_RenderCopyEx(render, img.carSprite, &carCut, &carPos, car.angle.value, nullptr, SDL_FLIP_NONE);
     }
