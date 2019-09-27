@@ -12,32 +12,26 @@
 #include "toi.h"
 using namespace std;
 
-bool collide(SDL_Rect first, SDL_Rect second){
-    if(first.x + first.w > second.x && first.x < second.x + second.w && first.y < second.y + second.h && first.y + first.h > second.y){
-        return true;
-    }
-    return false;
-}
-
 int main(){
     //==========================INIT==========================
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
-    SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
+    SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, SDL_WINDOW_RESIZABLE);
+    SDL_SetWindowDisplayMode(mainWindow, nullptr);
     SDL_Renderer *render = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
     srand(static_cast<unsigned int>(time(nullptr)));
 
     //==========================VARIABLES==========================
     Screen screen = {800, 600, 0, 0, false};
     Road road = {0, {20, 0}};
-    Car car = {0, 0, {0, 0}, {0, 0}};
+    Car car = {0, 0, {0, 0}, {0, 0}, 0};
     SDL_Point mouse, lamp = {800, 0};
-    Barrel barrel = {3000, rand() % 410 + 50, 0};
+    Barrel barrel = {5000, rand() % 410 + 50, 0};
     CarPiece carHood = {0, 0, {0, 0}, {0, 0}, false};
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
     int carState = 3, score = 0;
-    bool end = false, restart = false, changeRes = false;
+    bool end = false, restart = false, fullscreen = false;
     //==========================TEXTURES==========================
     Img img;
     img.carSprite = IMG_LoadTexture(render, "img/car.png");
@@ -53,18 +47,12 @@ int main(){
     while (!end){
         SDL_ShowCursor(SDL_DISABLE);
         //-----EVENT-----
-        eventCheck(mainWindow, end, restart, changeRes, menu, mouse, screen);
+        eventCheck(mainWindow, end, restart, fullscreen, menu, mouse, screen);
 
         //==========================RESOLUTION==========================
+        SDL_GetWindowSize(mainWindow, &screen.w, &screen.h);
         screen.wScale = screen.w/800.0;
         screen.hScale = screen.h/600.0;
-        /*if(changeRes){
-            screen.w = 1240;
-            screen.h = 720;
-            changeRes = false;
-            SDL_SetWindowSize(mainWindow, screen.w, screen.h);
-        }*/
-
         //==========================MOUSE==========================
         mouse = getMouseXY(mouse);
         if(menu.state == 0){
@@ -72,23 +60,12 @@ int main(){
             SDL_RenderClear(render);
 
             //==========================RESTART==========================
-            if(restart == true){
-                carState = 3;
-                road.speed.x = 20;
-                barrel.x = 1500;
-                carHood = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[0] = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[1] = {0, 0, {0, 0}, {0, 0}, false};
-                pieces[2] = {0, 0, {0, 0}, {0, 0}, false};
-                score = 0;
-                road.x = 0;
-                lamp.x = 800;
-                restart = false;
-            }
+            restartVars(restart, carState, road, barrel, carHood, pieces, score, lamp);
+
+            //==========================CONTROLS==========================
             if(carState > 0){
                 carControl(car, mouse, screen);
             }
-
             //==========================RECTS==========================
             SDL_Rect carPos = {car.x - 100, car.y - 25, toi((444/3)*screen.hScale), toi((212/3)*(screen.hScale))};
             SDL_Rect barrelPos = {barrel.x, barrel.y, toi(54*screen.hScale), toi(74*screen.hScale)};
@@ -104,7 +81,7 @@ int main(){
 
             //==========================BARREL=LOOP==========================
             if(carState > 0){
-                barrel.x = barrelLoop(barrel, score, screen.w);
+                barrel.x = barrelLoop(barrel, score, screen, car);
             }
             //==========================LAMP=LOOP==========================
             lamp.x = lampLoop(lamp, road, screen);
@@ -114,14 +91,25 @@ int main(){
             //==========================WRITE=SCORE==========================
             writeText(render, score, img.font, toi((screen.w / 2.0f) - 30), 30);
 
+            //==========================ANTI=STAND-STILL=COUNTER==========================
+            if((mouse.y > car.y - 20 && mouse.y < car.y + 20) || car.y == toi(70*screen.hScale) || car.y == toi(screen.h - 90*screen.hScale)){
+                car.moveCounter++;
+            } else {
+                car.moveCounter = 0;
+            }
             //==========================HITBOXES==========================
             if(collide(carPos, barrelPos)){
                 carState--;
                 barrel.x = screen.w + 500;
+                if(car.moveCounter > 150){
+                    barrel.y = car.y - toi(20*screen.hScale);
+                } else {
+                    barrel.y = rand() % (screen.h-100) + 50;
+                }
             }
             //=========================================================MENU=========================================================
         } else if(menu.state > 0){
-            drawMenu(render, menu, mouse, img, car, carState, screen);
+            drawMenu(render, menu, mouse, img, car, carState, screen, fullscreen);
         }
         drawCursor(render, mouse, img.cursor);
         SDL_RenderPresent(render);

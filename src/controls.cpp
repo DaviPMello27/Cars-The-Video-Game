@@ -3,7 +3,7 @@
 #include "structs.h"
 #include "toi.h"
 
-void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &changeRes, Menu &menu, SDL_Point mouse, Screen &screen){
+void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &fullscreen, Menu &menu, SDL_Point mouse, Screen &screen){
     SDL_Event gameEvent;
     while(SDL_PollEvent(&gameEvent)){
         switch(gameEvent.type){
@@ -21,8 +21,14 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &changeRe
                     case SDLK_ESCAPE:
                         menu.state = 1;
                     break;
-                    case SDLK_e:
-                        changeRes = true;
+                    case SDLK_f:
+                    if(fullscreen == false){
+                        SDL_SetWindowFullscreen(mainWindow, SDL_WINDOW_FULLSCREEN);
+                        fullscreen = true;
+                    } else {
+                        SDL_SetWindowFullscreen(mainWindow, 0);
+                        fullscreen = false;
+                    }
                     break;
                 }
             break;
@@ -58,11 +64,43 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &changeRe
                                 break;
                             }
                         }
+                        test = {25, (screen.h - 60), 150, 50};
+                        if(SDL_PointInRect(&mouse, &test)){
+                            menu.state = 1;
+                        }
+                        test = {screen.w/2 + 170, (screen.h/2 - 170) + 250, 50, 50};
+                        if(SDL_PointInRect(&mouse, &test)){
+                            if(fullscreen == false){
+                                SDL_SetWindowFullscreen(mainWindow, SDL_WINDOW_FULLSCREEN);
+                                fullscreen = true;
+                            } else {
+                                SDL_SetWindowFullscreen(mainWindow, 0);
+                                fullscreen = false;
+                            }
+                        }
+                        //screen.w/2 + 170, (screen.h/2 - 170) + 250, 50, 50
+                        //bgCut = {screen.w/2 - 300, screen.h/2 - 200, 600, 450};
                     }
                     break;
                 }
             break;
         }
+    }
+}
+
+void restartVars(bool &restart, int &carState, Road &road, Barrel &barrel, CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp){
+    if(restart == true){
+        carState = 3;
+        road.speed.x = 20;
+        barrel.x = 3000;
+        carHood = {0, 0, {0, 0}, {0, 0}, false};
+        pieces[0] = {0, 0, {0, 0}, {0, 0}, false};
+        pieces[1] = {0, 0, {0, 0}, {0, 0}, false};
+        pieces[2] = {0, 0, {0, 0}, {0, 0}, false};
+        score = 0;
+        road.x = 0;
+        lamp.x = 800;
+        restart = false;
     }
 }
 
@@ -81,7 +119,14 @@ void carControl(Car &car, SDL_Point mouse, Screen screen){
     }
     if(car.y < toi(70*screen.hScale)){
         car.y = toi(70*screen.hScale);
-    } else if (car.y > toi(screen.w - 90*screen.hScale)){
-        car.y = toi(screen.w - 90*screen.hScale);
+    } else if (car.y > toi(screen.h - 90*screen.hScale)){
+        car.y = toi(screen.h - 90*screen.hScale);
     }
+}
+
+bool collide(SDL_Rect first, SDL_Rect second){
+    if(first.x + first.w > second.x && first.x < second.x + second.w && first.y < second.y + second.h && first.y + first.h > second.y){
+        return true;
+    }
+    return false;
 }

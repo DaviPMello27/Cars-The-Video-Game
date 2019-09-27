@@ -58,13 +58,13 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
             }
         }
         SDL_Rect carHoodCut = {0, 0, 140, 140};
-        SDL_Rect carHoodPos = {carHood.x, carHood.y, toi((140/3) * screen.wScale), toi((140/3) * screen.wScale)};
+        SDL_Rect carHoodPos = {carHood.x, carHood.y, toi((140/3) * screen.hScale), toi((140/3) * screen.hScale)};
         carBreak(carHood, car, render, img.carHoodSprite, carHoodCut, carHoodPos, screen);
     }
 }
 
 int roadLoop(Road &road, int carState, Screen screen){
-    if(road.x >= 3100-screen.w){
+    if(road.x >= 2300){
         return 0;
     }
     if(carState > 0){
@@ -75,14 +75,18 @@ int roadLoop(Road &road, int carState, Screen screen){
     }
 }
 
-int barrelLoop(Barrel &barrel, int &score, int screenWidth){
+int barrelLoop(Barrel &barrel, int &score, Screen screen, Car car){
     if(barrel.x < 0){
-        barrel.y = rand() % 410 + 50;
+        if(car.moveCounter > 150){
+            barrel.y = car.y - toi(20*screen.hScale);
+        } else {
+            barrel.y = rand() % (screen.h-100) + 50;
+        }
         barrel.skin = rand() % 2;
         score++;
-        return screenWidth + 200;
+        return screen.w + 200;
     }
-    return toi(barrel.x - 20.0 * screenWidth/800.0);
+    return toi(barrel.x - 20.0 * screen.w/800.0);
 }
 
 int lampLoop(SDL_Point &lamp, Road road, Screen screen){

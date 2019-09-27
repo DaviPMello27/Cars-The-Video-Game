@@ -14,7 +14,7 @@ void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, i
     SDL_RenderFillRect(render, &button);
 }
 
-void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen){
+void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen, bool fullscreen){
     SDL_Rect bgCut = {0, 0, 800, 600};
     SDL_RenderCopy(render, img.bgRoad, &bgCut, nullptr);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
@@ -37,7 +37,7 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
                 menu.speed.y = 3;
                 menu.animate = false;
                 menu.state = 0;
-                car = {mouse.x, mouse.y, {0, 0}, {0, 0}};
+                car = {mouse.x, mouse.y, {0, 0}, {0, 0}, 0};
                 carState = 3;
             }
         }
@@ -55,6 +55,13 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
             } else {
                 createButton(render, mouse, toi(bgCut.x + bgCut.w*0.4), (bgCut.y + bgCut.h/5 + bgCut.h/8 * (i - 6) - bgCut.h/8), 150, 50);
                 writeText(render, text, img.font, toi(bgCut.x + bgCut.w*0.4 + 22), (bgCut.y + toi(bgCut.h/4.2) + bgCut.h/8 * (i - 6) - bgCut.h/8), 16, 24);
+            }
+            writeText(render, "Press F to toggle", img.font, bgCut.x + bgCut.w - 185, (bgCut.y + bgCut.h/15), 12, 18);
+            writeText(render, "fullscreen anytime", img.font, bgCut.x + bgCut.w - 190, (bgCut.y + bgCut.h/15) + 30, 12, 18);
+            writeText(render, "Toggle fullscreen", img.font, bgCut.x + bgCut.w - 190, (bgCut.y + bgCut.h/15) + 222, 12, 18);
+            createButton(render, mouse, bgCut.x + bgCut.w - 130, (bgCut.y + bgCut.h/15) + 250, 50, 50);
+            if(fullscreen){
+                writeText(render, "X", img.font, bgCut.x + bgCut.w - 121, (bgCut.y + bgCut.h/15) + 255, 44, 52);
             }
         }
         writeText(render, "< Back", img.font, 25, (screen.h - 50));

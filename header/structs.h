@@ -6,25 +6,6 @@
 
 const std::string res[2][13] = {{"640", "800", "1024", "1152", "1176", "1280", "1280", "1280", "1280", "1360", "1440", "1600", "1920"},
                                 {"360", "600", "768",  "864",  "664",  "720",  "768",  "800",  "1024", "768",  "900",  "900",  "1080"}};
-/*640	    360
-1024	768
-1152    864
-1176    664
-1280	720
-1280    768
-1280    800
-1280    1024
-1360	768
-1440	900
-1600	900
-1920	1080*/
-
-
-
-
-
-
-
 
 struct Img {
     SDL_Texture* carSprite;
@@ -45,12 +26,6 @@ struct Screen {
     bool full;
 };
 
-struct Barrel {
-    int x;
-    int y;
-    int skin;
-};
-
 struct Angle {
     double speed;
     double value;
@@ -61,11 +36,18 @@ struct Speed {
     double y;
 };
 
+struct Barrel {
+    int x;
+    int y;
+    int skin;
+};
+
 struct Car {
     int x;
     int y;
     Angle angle;
     Speed speed;
+    int moveCounter;
 };
 
 struct Road {

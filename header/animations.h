@@ -9,7 +9,7 @@ void carCrash(Car &car, int &carState);
 
 int roadLoop(Road &road, int carState, Screen screen);
 
-int barrelLoop(Barrel &barrel, int &score, int screenWidth);
+int barrelLoop(Barrel &barrel, int &score, Screen screen, Car car);
 
 int lampLoop(SDL_Point &lamp, Road road, Screen screen);
 
