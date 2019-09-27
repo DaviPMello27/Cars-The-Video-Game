@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include "structs.h"
 
-void eventCheck(SDL_Window* mainWindow, bool&, bool&, bool&, Menu &menu, SDL_Point, Screen &screen);
+void eventCheck(SDL_Window* mainWindow, bool&, bool&, bool&, int&, Menu &menu, SDL_Point, Screen &screen);
 
 void restartVars(bool &restart, int &carState, Road &road, Barrel &barrel, CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp);
 

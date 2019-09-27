@@ -3,7 +3,8 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    src/highscore.cpp
 SOURCES += src/animations.cpp
 SOURCES += src/controls.cpp
 SOURCES += src/menu.cpp
@@ -20,7 +21,8 @@ win32: LIBS += -L$$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/lib/ -lS
 INCLUDEPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
 DEPENDPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
 
-HEADERS += header/animations.h
+HEADERS += header/animations.h \
+    header/highscore.h
 HEADERS += header/controls.h
 HEADERS += header/menu.h
 HEADERS += header/text.h

@@ -2,8 +2,9 @@
 #include <iostream>
 #include "structs.h"
 #include "toi.h"
+#include "highscore.h"
 
-void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &fullscreen, Menu &menu, SDL_Point mouse, Screen &screen){
+void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &fullscreen, int &highscore, Menu &menu, SDL_Point mouse, Screen &screen){
     SDL_Event gameEvent;
     while(SDL_PollEvent(&gameEvent)){
         switch(gameEvent.type){
@@ -68,7 +69,7 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &fullscre
                         if(SDL_PointInRect(&mouse, &test)){
                             menu.state = 1;
                         }
-                        test = {screen.w/2 + 170, (screen.h/2 - 170) + 250, 50, 50};
+                        test = {screen.w/2 + 170, (screen.h/2 - 170) + 150, 50, 50};
                         if(SDL_PointInRect(&mouse, &test)){
                             if(fullscreen == false){
                                 SDL_SetWindowFullscreen(mainWindow, SDL_WINDOW_FULLSCREEN);
@@ -78,8 +79,10 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, bool &fullscre
                                 fullscreen = false;
                             }
                         }
-                        //screen.w/2 + 170, (screen.h/2 - 170) + 250, 50, 50
-                        //bgCut = {screen.w/2 - 300, screen.h/2 - 200, 600, 450};
+                        test = {screen.w/2 + 170, (screen.h/2 - 70) + 150, 50, 50};
+                        if(SDL_PointInRect(&mouse, &test)){
+                            highscore = setHighscore(0);
+                        }
                     }
                     break;
                 }
