@@ -1,5 +1,21 @@
+//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+///                            09/09/2019 - XX/XX/2019                            ///
+///                             COPYRIGHT DAVI MELLO                              ///
+//////========---------------------------------------------------------========//////
+
+///These will be the EN-US comments
+//Esses serão os comentários em PT-BR
+
 #include <iostream>
 #include <SDL.h>
+
+///writeText():
+///
+///Analyzes the text given (string or int), character by character, cuts and prints the respective letter from the "img/font.png" file.
+
+//writeText():
+//
+//Analisa o texto (string ou int), carater por caracter, corta e imprime a respectiva letra do arquivo "img/font.png".
 
 void writeText(SDL_Renderer *render, int text, SDL_Texture *font, int x, int y){
     std::string stringText = std::to_string(text);

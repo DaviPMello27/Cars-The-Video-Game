@@ -1,3 +1,12 @@
+//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+///                            09/09/2019 - XX/XX/2019                            ///
+///                             COPYRIGHT DAVI MELLO                              ///
+//////========---------------------------------------------------------========//////
+
+///These will be the EN-US comments
+//Esses serão os comentários em PT-BR
+
+
 #define SDL_MAIN_HANDLED
 #include <iostream>
 #include <random>
@@ -15,32 +24,29 @@
 #include "resolution.h"
 using namespace std;
 
-///===============================================================================================================
-///===================================================TO=DO=======================================================
-///===============================================================================================================
-///======                                                                                                   ======
-///======                                  - EXPLODE CAR ANIMATION                                          ======
-///======                                                                                                   ======
-///======                                      - ADD COMMENTS                                               ======
-///======                                                                                                   ======
-///===============================================================================================================
-///===============================================================================================================
-///===============================================================================================================
-
 int main(){
-    //==========================INIT==========================
+    //==========================INIT==========================//
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
     SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, SDL_WINDOW_RESIZABLE);
+    ///SDL_SetWindowDisplayMode() to set the window's display mode to default to prevent refresh rate issues.
+    //SDL_SetWindowDisplayMode() para definir o modo de display da janela, para previnir problemas com o taxa de atualização do monitor.
     SDL_SetWindowDisplayMode(mainWindow, nullptr);
     SDL_Renderer *render = SDL_CreateRenderer(mainWindow, -1, SDL_RENDERER_ACCELERATED);
+
+    ///Defining the seed to the random ints using the current time.
+    //Define a semente dos números aleatórios usando o horário atual.
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    //==========================VARIABLES==========================
+    //==========================VARIABLES==========================//
     Screen screen = {800, 600, 0, 0, false};
+    ///loadResolution() and loadFull() are defined in resolution.cpp, open it for more info about the functions.
+    //loadResolution() e loadFull() são definidos no arquivo "resolution.cpp", acesse-o para mais informações sobre as funções.
     loadResolution(screen, mainWindow);
     loadFull(screen, mainWindow);
-    cout << screen.w << ", " << screen.h << ", " << screen.full << "\n";
+
+    ///The vars are all defined here. Some will be initialized, when the player clicks "start", in the restart() function.
+    //As variáveis são todas definidas aqui. Algumas serão inicializadas, quando o jogador clica "start", na função restart().
     Road road;
     Car car = {0, 0, {0, 0}, {0, 0}, 0};
     SDL_Point mouse, lamp;
@@ -48,94 +54,180 @@ int main(){
     CarPiece carHood;
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
+    Animation explosion;
+    ///CARSTATE: > 3 means the player hasn't lost yet. < 0 means the game is over.
+    //CARSTATE: > 3 significa que o jogador ainda não perdeu. < 0 significa que o jogo acabou.
     int carState = 3, score, highscore;
     bool end = false, restart = false;
-    //==========================TEXTURES==========================
+    //==========================TEXTURES==========================//
+
+    ///initImg() is defined in animations.cpp, open it for more info about the function.
+    //initImg() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
     Img img = initImg(render);
 
-    //==========================SET=HIGHSCORE==========================
+    //==========================SET=HIGHSCORE==========================//
+    ///getHighscore() is defined in highscore.cpp, open it for more info about the function.
+    //getHighscore() é definida no arquivo "highscore.cpp", acesse-o para mais informações sobre a função.
     highscore = getHighscore();
-    //==========================GAME-LOOP==========================
+    //========================================================GAME-LOOP========================================================//
     while (!end){
         SDL_ShowCursor(SDL_DISABLE);
-        //-----EVENT-----
+        //-----EVENT-----//
+        ///eventCheck() is defined in controls.cpp, open it for more info about the function.
+        //eventCheck() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
         eventCheck(mainWindow, end, restart, highscore, carState, menu, mouse, screen);
-        //==========================RESOLUTION==========================
+
+        //==========================RESOLUTION==========================//
+        ///Updates the screen size values every frame because the window is resizeable by dragging.
+        //Atualiza os valores das dimensões da tela a cada quadro porque a janela é redimensionável com o mouse.
         SDL_GetWindowSize(mainWindow, &screen.w, &screen.h);
+
+        ///Sets the proportion of the window, for sprite size calculations.
+        //Define a taxa de proporção da janela para os cálculos dos sprites.
         screen.wScale = screen.w/800.0;
         screen.hScale = screen.h/600.0;
-        //==========================MOUSE==========================
+
+        //==========================MOUSE==========================//
+        ///Gets the mouse position.
+        //Pega a posição do mouse.
         mouse = getMouseXY(mouse);
+
+        ///===============================THIS PART RUNS AFTER THE PLAYER HITS START===============================///
+        //===========================ESSA PARTE É EXECUTADA APÓS O JOGADOR CLICAR "START"===========================//
         if(menu.state == 0){
-            //-----CLEAR-----
+            //-----CLEAR-----//
+            ///Clears the screen before drawing.
+            //Limpa a tela antes de desenhar.
             SDL_RenderClear(render);
 
-            //==========================RESTART==========================
+            //==========================RESTART==========================//
+            ///restartVars() is defined in controls.cpp, open it for more info about the function.
+            //restartVars() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
             restartVars(restart, carState, road, npcCar, carHood, pieces, score, lamp);
 
-            //==========================HIGHSCORE==========================
-            if(carState == 0){
-                if(score > highscore){
-                    highscore = setHighscore(score);
-                }
+            //==========================HIGHSCORE==========================//
+            ///Checks if the player has beat the highscore when the game is lost.
+            //Checa se o jogador bateu o recorde quando ele perde.
+            if(carState == 0 && score > highscore){
+                highscore = setHighscore(score);
             }
-            //==========================CONTROLS==========================
+
+            //==========================CONTROLS==========================//
+            ///Lets the player controls the car if he hasn't lost the game.
+            //Permite que o jogador controle o carro se ele ainda não perdeu.
             if(carState > 0){
+                ///carControl() is defined in controls.cpp, open it for more info about the function.
+                //carControl() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
                 carControl(car, mouse, screen);
             }
-            //==========================RECTS==========================
+
+            //==========================RECTS==========================//
+            ///Defining the position and size of the player's car and the NPC cars.
+            //Define a posição e o tamanho do carro do jogador e os carros dos NPCs.
             SDL_Rect carPos = {car.x - 100, car.y - 25, toi((444/2.5)*screen.hScale), toi((212/2.5)*(screen.hScale))};
             SDL_Rect* npcCarPos = new SDL_Rect[2];
             for(int i = 0; i < 2; i++){
                 npcCarPos[i] = {npcCar[i].x, npcCar[i].y, toi((444/2.5)*screen.hScale), toi((212/2.5)*(screen.hScale))};
             }
-            //==========================DRAWING==========================
+
+            //==========================DRAWING==========================//
+            ///drawSprites() is defined in animations.cpp, open it for more info about the function.
+            //drawSprites() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
             drawSprites(render, carState, road, carPos, npcCarPos, car, npcCar, img, screen);
 
-            //==========================CAR=PIECES=ANIMATIONS==========================
+            //==========================CAR=PIECES=ANIMATIONS==========================//
+            ///drawAnimation() is defined in animations.cpp, open it for more info about the function.
+            //drawAnimation() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
             drawAnimation(render, carState, pieces, car, carHood, img, screen);
 
-            //==========================ROADLOOP==========================
+            //==========================ROADLOOP==========================//
+            ///roadLoop() is defined in animations.cpp, open it for more info about the function.
+            //roadLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
             road.x = roadLoop(road, carState, screen);
 
-            //==========================NPCCAR=LOOP==========================
+            //==========================EXPLOSION==========================//
+            ///explodeAnimation() is defined in animations.cpp, open it for more info about the function.
+            //explodeAnimation() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
+            if(explosion.active){
+                explodeAnimation(render, img, explosion, screen);
+            }
+            //==========================NPCCAR=LOOP==========================//
+            ///Moves the NPC cars across the screen.
+            //Move os carros dos NPCs na tela.
             if(carState > 0){
+                ///NPCCarLoop() is defined in animations.cpp, open it for more info about the function.
+                //NPCCarLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
                 NPCCarLoop(npcCar, score, screen, car);
             }
-            //==========================LAMP=LOOP==========================
+
+            //==========================LAMP=LOOP==========================//
+            ///lampLoop() is defined in animations.cpp, open it for more info about the function.
+            //lampLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
             lamp.x = lampLoop(lamp, road, screen);
+
+            ///Defines the position and the size of the lamp sprite, and draws it on the screen.
+            //Define a posição e o tamanho do sprite do poste, e o desenha na tela.
             SDL_Rect lampPos = {lamp.x, 0, toi(600*screen.hScale), toi(600*screen.hScale)};
             SDL_RenderCopy(render, img.lampSprite, nullptr, &lampPos);
 
-            //==========================WRITE=SCORE==========================
+            //==========================WRITE=SCORE==========================//
+            ///writeText() is defined in text.cpp, open it for more info about the function.
+            //writeText() é definida no arquivo "text.cpp", acesse-o para mais informações sobre a função.
             writeText(render, score, img.font, toi((screen.w / 2.0f) - 30), 30);
+
+            ///The text showing the highscore is displayed only when the player loses or when he hasn't scored yet.
+            //O text mostrando o recorde é mostrado apenas quando o jogador perde ou quando ele ainda não pontuou.
             if(carState < 1 || score == 0){
                 string scoreText = "Highscore: " + to_string(highscore);
                 writeText(render, scoreText, img.font, screen.w / 2 - 90, 100, 14, 24);
             }
-            //==========================ANTI=STAND-STILL=COUNTER==========================
+
+            //==========================ANTI=STAND-STILL=COUNTER==========================//
+            ///This part counts the amount of frames that the player stays still in relation to the y-axis and reset when he moves. Is used in NPCCarLoop().
+            //Esta parte conta a quantidade de quadros que o jogador fica parado em relação ao eixo y e retorna a 0 quando ele move. É usado em NPCCarLoop().
             if((mouse.y > car.y - 20 && mouse.y < car.y + 20) || car.y == toi(70*screen.hScale) || car.y == toi(screen.h - 90*screen.hScale)){
                 car.moveCounter++;
             } else {
                 car.moveCounter = 0;
             }
-            //==========================HITBOXES==========================
-            carCollision(carPos, npcCarPos, mouse, car, npcCar, screen, carState);
+
+            //==========================HITBOXES==========================//
+            ///carCollision() is defined in controls.cpp, open it for more info about the function.
+            //carCollision() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
+            carCollision(carPos, npcCarPos, mouse, car, npcCar, screen, carState, explosion);
             delete [] npcCarPos;
 
-            ///Enable this line to show the car's hitbox
+            ///Enable this line to show the player's hitbox
+            //Ative esta linha para mostrar a hitbox do jogador.
             //SDL_RenderFillRect(render, &carPos);
-        //=========================================================MENU=========================================================
+        //=========================================================MENU==============================================//
+        ///===============================THIS PART RUNS BEFORE THE PLAYER HITS START===============================///
+        //===========================ESSA PARTE É EXECUTADA ANTES DO JOGADOR CLICAR "START"==========================//
         } else if(menu.state > 0){
+            ///drawMenu() is defined in menu.cpp, open it for more info about the function.
+            //drawMenu() é definida no arquivo "menu.cpp", acesse-o para mais informações sobre a função.
             drawMenu(render, menu, mouse, img, car, carState, screen, highscore);
         }
+        ///drawCursor() is defined in animations.cpp, open it for more info about the function.
+        //drawCursor() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
         drawCursor(render, mouse, img.cursor);
+
+        ///Displays everything that has been drawn on the screen.
+        //Mostra tudo que foi desenhado na tela.
         SDL_RenderPresent(render);
+
+        ///Framerate (60FPS)
+        //Taxa de quadros (60 Quadros por Segundo)
         SDL_Delay(1000/60);
     }
 
     //==========================DESTROY==========================
+    ///destroy() is defined in animations.cpp, open it for more info about the function.
+    //destroy() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
     destroy(mainWindow, render, img);
+
+    ///Quits SDL.
+    //Finaliza a SDL.
     SDL_Quit();
     return 0;
 }

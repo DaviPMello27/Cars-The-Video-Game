@@ -19,6 +19,8 @@ void drawAnimation(SDL_Renderer *renderer, int carState, CarPiece (&pieces)[3], 
 
 void drawSprites(SDL_Renderer *renderer, int &carState, Road road, SDL_Rect carPosRect, SDL_Rect npcCarPosRect[2], Car &car, NPCCar npcCar[2], Img images, Screen screen);
 
+void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen);
+
 Img initImg(SDL_Renderer* render);
 
 void destroy(SDL_Window* window, SDL_Renderer* renderer, Img &images);

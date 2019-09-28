@@ -1,6 +1,32 @@
+//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+///                            09/09/2019 - XX/XX/2019                            ///
+///                             COPYRIGHT DAVI MELLO                              ///
+//////========---------------------------------------------------------========//////
+
+///These will be the EN-US comments
+//Esses serão os comentários em PT-BR
+
 #include <iostream>
 #include <fstream>
 using namespace std;
+
+
+///getHighscore():
+///
+///Opens the "bin/data.bin" file and returns the value that's in it.
+
+//getHighscore():
+//
+//Abre o arquivo "bin/data.bin" e retorna o valor que está nele.
+
+
+///setHighscore():
+///
+///Opens the "bin/data.bin" file and prints the player's highscore.
+
+//setHighscore():
+//
+//Abre o arquivo "bin/data.bin" e escreve o recorde do jogador.
 
 int getHighscore(){
     ifstream fileIn("bin/data.bin");
@@ -11,14 +37,8 @@ int getHighscore(){
 }
 
 int setHighscore(int newScore){
-    string score2 = to_string(newScore);
-    char* score = new char[sizeof(score2)];
-    for(int i = 0; i < static_cast<int>(sizeof(score2)); i++){
-        score[i] = score2[static_cast<unsigned long long>(i)];
-    }
-    ofstream fileOut("bin/data.bin", ios::out | ios::binary);
-    fileOut.write(static_cast<char*>(score), sizeof(score));
-    fileOut.close();
-    delete[] score;
+    ofstream file("bin/data.bin");
+    file << newScore;
+    file.close();
     return newScore;
 }

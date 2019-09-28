@@ -17,6 +17,7 @@ struct Img {
     SDL_Texture* npcCarSprite3;
     SDL_Texture* npcCarSprite4;
     SDL_Texture* npcCarSprite5;
+    SDL_Texture* explosion;
     SDL_Texture* font;
     SDL_Texture* cursor;
     SDL_Texture* lampSprite;
@@ -38,6 +39,16 @@ struct Angle {
 struct Speed {
     double x;
     double y;
+};
+
+struct Animation {
+    int x;
+    int y;
+    Speed speed;
+    int counter;
+    bool active;
+    SDL_Rect spriteCut;
+    SDL_Rect spritePos;
 };
 
 struct NPCCar {

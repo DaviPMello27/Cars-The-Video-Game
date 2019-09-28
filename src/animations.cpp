@@ -1,3 +1,11 @@
+//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+///                            09/09/2019 - XX/XX/2019                            ///
+///                             COPYRIGHT DAVI MELLO                              ///
+//////========---------------------------------------------------------========//////
+
+///These will be the EN-US comments
+//Esses serão os comentários em PT-BR
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <random>
@@ -6,8 +14,18 @@
 #include <iostream>
 
 
+///carBreak():
+///
+///Defines the car pieces' starting position and directions, and animates them.
+
+//carBreak():
+//
+//Define a posição inicial das peças do carro, e aplica a animação.
+
 void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprite, SDL_Rect cut, SDL_Rect pos, Screen screen){
     if(!piece.broke){
+        ///(This runs only once) Defines the position and speeds.
+        //(Isto é executado apenas uma vez) Define as posições e as velocidades.
         piece.speed.x = (rand() % 5 + 10)*screen.wScale;
         piece.speed.y = (rand() % 10 - 5)*screen.hScale;
         piece.angle.speed = rand() % 10 + 30;
@@ -17,13 +35,28 @@ void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprit
         pos.y = piece.y;
         piece.broke = true;
     }
+
+    ///Draws the pieces.
+    //Desenha as peças.
     SDL_RenderCopyEx(render, sprite, &cut, &pos, static_cast<double>(piece.angle.value), nullptr, SDL_FLIP_NONE);
+
+    ///Applies the speeds to the positions and angles, and increases them.
+    //Aplica as velocidades e as aumenta.
     piece.y -= piece.speed.y;
     piece.x += piece.speed.x;
     piece.speed.x--;
     piece.angle.value += piece.angle.speed;
     piece.angle.speed /= 1.1;
 }
+
+
+///carCrash():
+///
+///Same as carBreak(), but the whole car makes a different animation.
+
+//carCrash():
+//
+//Faz o mesmo que o carBreak(), mas o carro inteiro faz uma animação diferente.
 
 void carCrash(Car &car, int &carState, Screen screen){
     if(carState == 0){
@@ -44,7 +77,18 @@ void carCrash(Car &car, int &carState, Screen screen){
     }
 }
 
+
+///drawAnimation():
+///
+///Applies the animations to the sprites.
+
+//drawAnimation():
+//
+//Aplica as animações aos sprites.
+
 void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img img, Screen screen){
+    ///Car pieces (first and second hit):
+    //Peças do carro (na primeira e segunda colisão):
     if(carState == 2 || carState == 1){
         for(int i = 0; i < 3; i++){
             SDL_Rect carPieceCut = {i*20, 0, 20, 12};
@@ -52,7 +96,11 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
             carBreak(pieces[i], car, render, img.carPieces, carPieceCut, carPiecePos, screen);
         }
     }
+    ///Car pieces and hood (second hit):
+    //Peças do carro e capô (segunda colisão):
     if(carState == 1 && carHood.x > -50){
+        ///Reset the pieces:
+        //Reinicializar as peças:
         for(int i = 0; i < 3; i++){
             if(pieces[i].broke == true && carHood.broke == false){
                 pieces[i] = {0, 0, {0, 0}, {0, 0}, false};
@@ -64,32 +112,68 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
     }
 }
 
+
+///roadLoop():
+///
+///Resets the road position, moves it or stops it.
+
+//roadLoop():
+//
+//Reinicializa a posição da estrada, a move, ou pára.
+
 int roadLoop(Road &road, int carState, Screen screen){
+    ///Reset:
+    //Reinicalizar:
     if(road.x >= 2300){
         return 0;
     }
+    ///Move:
+    //Mover:
     if(carState > 0){
         return toi(road.x + road.speed.x * screen.wScale);
     } else {
+        ///Stop:
+        //Parar:
         road.speed.x /= 1.03;
         return toi(road.x + road.speed.x * screen.wScale);
     }
 }
 
+
+///NPCCarLoop():
+///
+///Resets the positions of the NPC cars, or moves them.
+
+//NPCCarsLoop():
+//
+//Reinicializa as posições dos carros NPC, ou os move.
+
 void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car){
     for(int i = 0; i < 2; i++){
         if(npcCar[i].x < -212*screen.hScale){
+            ///Anti stand-still counter:
+            //Contador anti-ficar-parado:
             if(car.moveCounter > 150){
                 npcCar[i].y = car.y - toi(20*screen.hScale);
             } else {
                 npcCar[i].y = rand() % (screen.h-100) + 50;
             }
+
+            ///Checks if the cars arent too next to each other, in relation to the y-axis:
+            //Checa se os carros não estão muito pertos um do outro em relação ao eixo y:
             while(npcCar[i].y > npcCar[(i + 1) % 2].y - 212/2.5 && npcCar[i].y < npcCar[(i + 1) % 2].y + 424/2.5){
                 npcCar[i].y = rand() % (screen.h-100) + 50;
             }
+
+            ///Sets the speed and the sprite:
+            //Seleciona a velocidade e o sprite:
             npcCar[i].speed.x = rand() % 10 + 15;
             npcCar[i].skin = rand() % 15;
+
             score++;
+
+            ///Checks if the cars arent too next to each other, in relation to the x-axis:
+            //Checa se os carros não estão muito pertos um do outro em relação ao eixo x:
             if(npcCar[(i + 1) % 2].x < screen.w/2){
                 npcCar[i].x = screen.w + 200;
             } else {
@@ -101,6 +185,15 @@ void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car){
     }
 }
 
+
+///lampLoop():
+///
+///Resets and applies speed to the lamp sprite.
+
+//lampLoop():
+//
+//Reinicializa e aplica velocidade ao sprite do poste.
+
 int lampLoop(SDL_Point &lamp, Road road, Screen screen){
     if(lamp.x < -800){
         return screen.w + 800;
@@ -108,10 +201,28 @@ int lampLoop(SDL_Point &lamp, Road road, Screen screen){
     return lamp.x - toi(road.speed.x * screen.wScale);
 }
 
+
+///drawCursor():
+///
+///Draws the cursor.
+
+//drawCursor():
+//
+//Desenha o cursor.
+
 void drawCursor(SDL_Renderer *render, SDL_Point mouse, SDL_Texture *cursor){
     SDL_Rect cursorPos = {mouse.x - 15, mouse.y - 15, 30, 30};
     SDL_RenderCopy(render, cursor, nullptr, &cursorPos);
 }
+
+
+///drawCarSkin():
+///
+///Selects and draws the sprite for the NPC cars, between otherCars.png, otherCars2.png, otherCars3.png, otherCars4.png, and otherCars5.png.
+
+//drawCarSkin():
+//
+//Seleciona e desenha o sprite dos carros NPC entre otherCars.png, otherCars2.png, otherCars3.png, otherCars4.png, e otherCars5.png.
 
 void drawCarSkin(SDL_Renderer* render, Img img, SDL_Rect npcCarPos[2], NPCCar npcCar[2]){
     for(int i = 0; i < 2; i++){
@@ -134,6 +245,15 @@ void drawCarSkin(SDL_Renderer* render, Img img, SDL_Rect npcCarPos[2], NPCCar np
     }
 }
 
+
+///drawSprites():
+///
+///Draws the road, the player's car and the NPC cars.
+
+//drawSprites():
+//
+//Desenha a estrada, o carro do jogador e os carros NPC.
+
 void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos, SDL_Rect npcCarPos[2], Car &car, NPCCar npcCar[2], Img img, Screen screen){
     SDL_Rect carCut = {0, (3-carState)*212, 444, 212};
     SDL_Rect roadCut = {road.x, 0, screen.w, 600};
@@ -153,6 +273,64 @@ void drawSprites(SDL_Renderer *render, int &carState, Road road, SDL_Rect carPos
     }
 }
 
+
+///explodeAnimation():
+///
+///Draws the explosion animation.
+
+//explodeAnimation():
+//
+//Desenha a animação da explosão;
+
+void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen){
+    ///Sets the sprite position and applies the speed:
+    //Define a posição do sprite e aplica a velocidade:
+    explosion.spritePos = {explosion.x, explosion.y, toi((201/1.5) * screen.hScale), toi((177/1.5) * screen.hScale)};
+    explosion.x -= explosion.speed.x;
+    explosion.speed.x /= 1.05;
+
+    ///Changes the sprite every five frames:
+    //Muda o sprite a cada cinco quadros:
+    switch(explosion.counter){
+        case 0:
+            explosion.spriteCut.x = 0;
+        break;
+        case 5:
+            explosion.spriteCut.x = 201;
+        break;
+        case 10:
+            explosion.spriteCut.x = 402;
+        break;
+        case 15:
+            explosion.spriteCut.x = 603;
+        break;
+        case 20:
+            explosion.spriteCut.x = 804;
+        break;
+        case 25:
+            explosion.spriteCut.x = 1005;
+        break;
+        case 30:
+            explosion.spriteCut.x = 1206;
+        break;
+        case 35:
+            explosion.counter = -1;
+            explosion.active = false;
+        break;
+    }
+    explosion.counter++;
+    SDL_RenderCopy(render, img.explosion, &explosion.spriteCut, &explosion.spritePos);
+}
+
+
+///initImg():
+///
+///Initializes the textures.
+
+//initImg():
+//
+//Inicializa as texturas.
+
 Img initImg(SDL_Renderer* render){
     Img img;
     img.carSprite = IMG_LoadTexture(render, "img/car.png");
@@ -164,11 +342,21 @@ Img initImg(SDL_Renderer* render){
     img.npcCarSprite3 = IMG_LoadTexture(render, "img/otherCars3.png");
     img.npcCarSprite4 = IMG_LoadTexture(render, "img/otherCars4.png");
     img.npcCarSprite5 = IMG_LoadTexture(render, "img/otherCars5.png");
+    img.explosion = IMG_LoadTexture(render, "img/explosion.png");
     img.font = IMG_LoadTexture(render, "img/font.png");
     img.cursor = IMG_LoadTexture(render, "img/cursor.png");
     img.lampSprite = IMG_LoadTexture(render, "img/lamp.png");
     return img;
 }
+
+
+///destroy():
+///
+///Deletes the window, renderer and textures.
+
+//destroy():
+//
+//Deleta a janela, o renderizador e as texturas.
 
 void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.carSprite);
@@ -178,6 +366,7 @@ void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.npcCarSprite3);
     SDL_DestroyTexture(img.npcCarSprite4);
     SDL_DestroyTexture(img.npcCarSprite5);
+    SDL_DestroyTexture(img.explosion);
     SDL_DestroyTexture(img.carPieces);
     SDL_DestroyTexture(img.carHoodSprite);
     SDL_DestroyTexture(img.font);

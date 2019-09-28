@@ -1,8 +1,25 @@
+//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+///                            09/09/2019 - XX/XX/2019                            ///
+///                             COPYRIGHT DAVI MELLO                              ///
+//////========---------------------------------------------------------========//////
+
+///These will be the EN-US comments
+//Esses serão os comentários em PT-BR
+
 #include <SDL.h>
 #include <iostream>
 #include "structs.h"
 #include "text.h"
 #include "toi.h"
+
+
+///createButton():
+///
+///Creates a rectangle that gets brighter when the mouse is on it.
+
+//createButton():
+//
+//Cria um retângulo que se torna mais claro quando o mouse está dentro.
 
 void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, int h){
     SDL_Rect button = {x, y, w, h};
@@ -13,6 +30,15 @@ void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, i
     }
     SDL_RenderFillRect(render, &button);
 }
+
+
+///drawMenu():
+///
+///Draws the title and the buttons. They're centered in the x-axis.
+
+//drawMenu():
+//
+//Desenha o título e os botões. São centralizados no eixo x.
 
 void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen, int highscore){
     SDL_Rect bgCut = {0, 0, 800, 600};
@@ -47,6 +73,9 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
         SDL_SetRenderDrawColor(render, 255, 255, 255, 32);
         SDL_RenderFillRect(render, &bgCut);
         writeText(render, "Resolution:", img.font, (bgCut.x + bgCut.w/20), (bgCut.y + bgCut.h/15), 20, 28);
+
+        ///This part draws all of the resolution buttons.
+        //Esta parte desenha todos os botões das resoluções.
         for(int i = 0; i < 13; i++){
             std::string text = res[0][i] + "x" + res[1][i];
             if(i < 6){
