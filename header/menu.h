@@ -4,9 +4,9 @@
 #include <SDL.h>
 #include "structs.h"
 
-void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, int h);
+void createButton(SDL_Renderer *renderer, SDL_Point &mousePosition, int x, int y, int w, int h);
 
-void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen, bool fullscreen, int highScore);
+void drawMenu(SDL_Renderer *renderer, Menu &menu, SDL_Point mousePosition, Img img, Car &car, int &carState, Screen screen, int highScore);
 
 
 #endif // MENU_H

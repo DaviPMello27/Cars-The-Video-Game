@@ -12,7 +12,11 @@ struct Img {
     SDL_Texture* carPieces;
     SDL_Texture* carHoodSprite;
     SDL_Texture* bgRoad;
-    SDL_Texture* barrelSprite;
+    SDL_Texture* npcCarSprite;
+    SDL_Texture* npcCarSprite2;
+    SDL_Texture* npcCarSprite3;
+    SDL_Texture* npcCarSprite4;
+    SDL_Texture* npcCarSprite5;
     SDL_Texture* font;
     SDL_Texture* cursor;
     SDL_Texture* lampSprite;
@@ -36,10 +40,11 @@ struct Speed {
     double y;
 };
 
-struct Barrel {
+struct NPCCar {
     int x;
     int y;
     int skin;
+    Speed speed;
 };
 
 struct Car {

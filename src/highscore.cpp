@@ -7,7 +7,6 @@ int getHighscore(){
     string highScore;
     getline(fileIn, highScore);
     fileIn.close();
-    cout << "Getting highscore " << highScore;
     return stoi(highScore);
 }
 
@@ -20,6 +19,6 @@ int setHighscore(int newScore){
     ofstream fileOut("bin/data.bin", ios::out | ios::binary);
     fileOut.write(static_cast<char*>(score), sizeof(score));
     fileOut.close();
-    cout << "Setting highscore " << newScore;
+    delete[] score;
     return newScore;
 }
