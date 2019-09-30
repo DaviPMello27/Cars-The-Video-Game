@@ -63,7 +63,7 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
                 menu.speed.y = 3;
                 menu.animate = false;
                 menu.state = 0;
-                car = {mouse.x, mouse.y, {0, 0}, {0, 0}, 0};
+                car = {mouse.x, mouse.y, {0, 0}, {0, 0}, 0, {0, 0, 0, 0}, {0, 0, 0, 0}};
                 carState = 3;
             }
         }

@@ -11,8 +11,6 @@ SDL_Point getMouseXY(SDL_Point mousePosition);
 
 void carControl(Car &car, SDL_Point mousePosition, Screen screen);
 
-bool collide(SDL_Rect firstRect, SDL_Rect secondRect);
-
-void carCollision(SDL_Rect &carPosRect, SDL_Rect npcCarPosRect[2], SDL_Point mousePosition, Car car, NPCCar (&npcCar)[2], Screen screen, int &carState, Animation &explosion);
+bool carCollision(SDL_Point mousePosition, Car &car, NPCCar (&npcCar)[2], Screen screen, int &carState, Animation &explosion);
 
 #endif // CONTROLS_H

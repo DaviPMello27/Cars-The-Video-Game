@@ -170,14 +170,14 @@ void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], 
     if(restart == true){
         carState = 3;
         road.speed.x = 20;
-        npcCar[0] = {3000, rand() % 410 + 50, rand() % 15, {20, 0}};
-        npcCar[1] = {4000, rand() % 410 + 50, rand() % 15, {20, 0}};
-        carHood = {0, 0, {0, 0}, {0, 0}, false};
-        pieces[0] = {0, 0, {0, 0}, {0, 0}, false};
-        pieces[1] = {0, 0, {0, 0}, {0, 0}, false};
-        pieces[2] = {0, 0, {0, 0}, {0, 0}, false};
+        npcCar[0] = {3000, rand() % 410 + 50, rand() % 15, {20, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+        npcCar[1] = {4000, rand() % 410 + 50, rand() % 15, {20, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
+        carHood = {0, 0, {0, 0}, {0, 0}, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
+        pieces[0] = {0, 0, {0, 0}, {0, 0}, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
+        pieces[1] = {0, 0, {0, 0}, {0, 0}, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
+        pieces[2] = {0, 0, {0, 0}, {0, 0}, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
         score = 0;
-        road = {0, {30, 0}};
+        road = {0, {30, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
         lamp = {800, 0};
         restart = false;
     }
@@ -252,17 +252,17 @@ bool collide(SDL_Rect first, SDL_Rect second){
 //
 //Define o que acontece quando dois carros colidem.
 
-void carCollision(SDL_Rect &carPos, SDL_Rect npcCarPos[2], SDL_Point mouse, Car car, NPCCar (&npcCar)[2], Screen screen, int &carState, Animation &explosion){
+bool carCollision(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2], Screen screen, int &carState, Animation &explosion){
     for(int i = 0; i < 2; i++){
         ///Decreases the player's car's hitbox's width based on the angle, to adapt to the sprite.
         //Diminui a largura da hitbox do carro do jogador baseado no ângulo, para adaptar ao sprite.
-        carPos.w -= abs(((mouse.y - car.y)/3));
-        carPos.x += abs(((mouse.y - car.y)/5));
-        carPos.y += ((mouse.y - car.y)/10);
+        car.pos.w -= abs(((mouse.y - car.y)/3));
+        car.pos.x += abs(((mouse.y - car.y)/5));
+        car.pos.y += ((mouse.y - car.y)/10);
 
         ///Decreases carState and resets the NPCCar position.
         //Diminui o carState e reinicializa a posição do carro NPC.
-        if(collide(carPos, npcCarPos[i])){
+        if(collide(car.pos, npcCar[i].pos)){
             carState--;
             npcCar[i].x = screen.w + 500;
             npcCar[i].speed.x = rand() % 10 + 10;
@@ -277,6 +277,8 @@ void carCollision(SDL_Rect &carPos, SDL_Rect npcCarPos[2], SDL_Point mouse, Car 
             explosion.counter = 0;
             explosion.spriteCut = {0, 0, 201, 177};
             explosion.active = true;
+            return true;
         }
     }
+    return false;
 }

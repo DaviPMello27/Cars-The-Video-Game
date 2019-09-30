@@ -56,6 +56,8 @@ struct NPCCar {
     int y;
     int skin;
     Speed speed;
+    SDL_Rect cut;
+    SDL_Rect pos;
 };
 
 struct Car {
@@ -64,11 +66,15 @@ struct Car {
     Angle angle;
     Speed speed;
     int moveCounter;
+    SDL_Rect cut;
+    SDL_Rect pos;
 };
 
 struct Road {
     int x;
     Speed speed;
+    SDL_Rect cut;
+    SDL_Rect pos;
 };
 
 struct CarPiece {
@@ -77,6 +83,8 @@ struct CarPiece {
     Speed speed;
     Angle angle;
     bool broke;
+    SDL_Rect cut;
+    SDL_Rect pos;
 };
 
 struct Menu {

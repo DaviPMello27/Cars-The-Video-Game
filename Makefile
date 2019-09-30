@@ -219,6 +219,10 @@ Makefile: sdl.pro C:/Qt/5.13.0/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Qt/5.1
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/resolve_config.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/exclusive_builds_post.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/default_post.prf \
+		C:/Qt/5.13.0/mingw73_64/mkspecs/features/qt.prf \
+		C:/Qt/5.13.0/mingw73_64/mkspecs/features/resources.prf \
+		C:/Qt/5.13.0/mingw73_64/mkspecs/features/moc.prf \
+		C:/Qt/5.13.0/mingw73_64/mkspecs/features/win32/opengl.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/win32/console.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/qml_debug.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/precompile_header.prf \
@@ -229,7 +233,9 @@ Makefile: sdl.pro C:/Qt/5.13.0/mingw73_64/mkspecs/win32-g++/qmake.conf C:/Qt/5.1
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/exceptions.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/yacc.prf \
 		C:/Qt/5.13.0/mingw73_64/mkspecs/features/lex.prf \
-		sdl.pro
+		sdl.pro \
+		C:/Qt/5.13.0/mingw73_64/lib/Qt5Gui.prl \
+		C:/Qt/5.13.0/mingw73_64/lib/Qt5Core.prl
 	$(QMAKE) -o Makefile sdl.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/spec_pre.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/qdevice.pri:
@@ -387,6 +393,10 @@ C:/Qt/5.13.0/mingw73_64/mkspecs/features/win32/default_pre.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/resolve_config.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/exclusive_builds_post.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/default_post.prf:
+C:/Qt/5.13.0/mingw73_64/mkspecs/features/qt.prf:
+C:/Qt/5.13.0/mingw73_64/mkspecs/features/resources.prf:
+C:/Qt/5.13.0/mingw73_64/mkspecs/features/moc.prf:
+C:/Qt/5.13.0/mingw73_64/mkspecs/features/win32/opengl.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/win32/console.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/qml_debug.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/precompile_header.prf:
@@ -398,6 +408,8 @@ C:/Qt/5.13.0/mingw73_64/mkspecs/features/exceptions.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/yacc.prf:
 C:/Qt/5.13.0/mingw73_64/mkspecs/features/lex.prf:
 sdl.pro:
+C:/Qt/5.13.0/mingw73_64/lib/Qt5Gui.prl:
+C:/Qt/5.13.0/mingw73_64/lib/Qt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile sdl.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 
@@ -409,6 +421,18 @@ clean: debug-clean release-clean  FORCE
 distclean: debug-distclean release-distclean  FORCE
 	-$(DEL_FILE) Makefile
 	-$(DEL_FILE) .qmake.stash
+
+debug-mocclean:
+	$(MAKE) -f $(MAKEFILE).Debug mocclean
+release-mocclean:
+	$(MAKE) -f $(MAKEFILE).Release mocclean
+mocclean: debug-mocclean release-mocclean
+
+debug-mocables:
+	$(MAKE) -f $(MAKEFILE).Debug mocables
+release-mocables:
+	$(MAKE) -f $(MAKEFILE).Release mocables
+mocables: debug-mocables release-mocables
 
 check: first
 

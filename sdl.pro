@@ -1,7 +1,10 @@
 TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG += qt
+
+RC_FILE += img/iconSet.rc
+RC_FILE += resource.rc
 
 SOURCES += main.cpp \
     src/highscore.cpp \
@@ -32,5 +35,8 @@ HEADERS += header/structs.h
 HEADERS += header/toi.h
 
 INCLUDEPATH += header
+INCLUDEPATH += :/res/img
 
 RESOURCES +=
+
+DISTFILES +=

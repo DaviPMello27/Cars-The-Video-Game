@@ -3,10 +3,6 @@
 #include <SDL.h>
 #include "structs.h"
 
-void carBreak(CarPiece &piece, SDL_Point mousePosition, SDL_Renderer *renderer, SDL_Texture *sprite, SDL_Rect cutRect, SDL_Rect posRect);
-
-void carCrash(Car &car, int &carState);
-
 int roadLoop(Road &road, int carState, Screen screen);
 
 void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car);
@@ -17,7 +13,7 @@ void drawCursor(SDL_Renderer *renderer, SDL_Point mousePosition, SDL_Texture *cu
 
 void drawAnimation(SDL_Renderer *renderer, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img images, Screen screen);
 
-void drawSprites(SDL_Renderer *renderer, int &carState, Road road, SDL_Rect carPosRect, SDL_Rect npcCarPosRect[2], Car &car, NPCCar npcCar[2], Img images, Screen screen);
+void drawSprites(SDL_Renderer *renderer, int &carState, Road road, Car &car, NPCCar npcCar[2], Img images, Screen screen);
 
 void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen);
 
