@@ -11,7 +11,9 @@ struct Img {
     SDL_Texture* carSprite;
     SDL_Texture* carPieces;
     SDL_Texture* carHoodSprite;
+    SDL_Texture* headLights;
     SDL_Texture* bgRoad;
+    SDL_Texture* bgRoadRain;
     SDL_Texture* npcCarSprite;
     SDL_Texture* npcCarSprite2;
     SDL_Texture* npcCarSprite3;
@@ -20,7 +22,9 @@ struct Img {
     SDL_Texture* explosion;
     SDL_Texture* font;
     SDL_Texture* cursor;
-    SDL_Texture* lampSprite;
+    SDL_Texture* lampSpriteOn;
+    SDL_Texture* lampSpriteOff;
+    SDL_Texture* rainSprite;
 };
 
 struct Screen {
@@ -92,6 +96,17 @@ struct Menu {
     int state;
     Speed speed;
     bool animate;
+};
+
+struct Night {
+    int threshold;
+    bool active;
+};
+
+struct Rain {
+    int count;
+    bool active;
+    SDL_Rect cut;
 };
 
 #endif // STRUCTS_H

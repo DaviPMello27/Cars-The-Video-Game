@@ -5,7 +5,7 @@
 
 void eventCheck(SDL_Window* window, bool &endFlag, bool &restartFlag, int &highscore, int carState, Menu &menu, SDL_Point mousePosition, Screen &screen);
 
-void restartVars(bool &restartFlag, int &carState, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lampPosition);
+void restartVars(bool &restartFlag, int &carState, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lampPosition, Night &night);
 
 SDL_Point getMouseXY(SDL_Point mousePosition);
 

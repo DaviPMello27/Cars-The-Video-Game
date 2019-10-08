@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - XX/XX/2019                            ///
+///                            09/09/2019 - 30/09/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -9,8 +9,6 @@
 
 ///toi() (to int), was made only to replace static_cast<int>, for visual pollution purposes.
 //toi(), (to int), foi criada apenas para substituir o static_cast<int>, por questões de poluição visual.
-
-
 
 int toi(float x){
     return static_cast<int>(x);

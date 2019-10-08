@@ -1,4 +1,4 @@
-//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
+﻿//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
 ///                            09/09/2019 - XX/XX/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
@@ -51,7 +51,6 @@ int main(){
     //loadResolution() e loadFull() são definidos no arquivo "resolution.cpp", acesse-o para mais informações sobre as funções.
     loadResolution(screen, mainWindow);
     loadFull(screen, mainWindow);
-
     ///The vars are all defined here. Some will be initialized, when the player clicks "start", in the restart() function.
     //As variáveis são todas definidas aqui. Algumas serão inicializadas, quando o jogador clica "start", na função restart().
     Road road;
@@ -62,18 +61,21 @@ int main(){
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
     Animation explosion;
+    Rain rain = {0, true, {0, 0, 1000, 600}};
+    Night night = {0, false};
 
-
-    int glow = 0;
     ///CARSTATE: > 3 means the player hasn't lost yet. < 0 means the game is over.
     //CARSTATE: > 3 significa que o jogador ainda não perdeu. < 0 significa que o jogo acabou.
     int carState = 3, score, highscore;
     bool end = false, restart = false;
-    //==========================TEXTURES==========================//
 
+    //==========================TEXTURES==========================//
     ///initImg() is defined in animations.cpp, open it for more info about the function.
     //initImg() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
     Img img = initImg(render);
+
+    SDL_SetTextureBlendMode(img.lampSpriteOn, SDL_BLENDMODE_ADD);
+    SDL_SetTextureBlendMode(img.headLights, SDL_BLENDMODE_ADD);
 
     //==========================SET=HIGHSCORE==========================//
     ///getHighscore() is defined in highscore.cpp, open it for more info about the function.
@@ -114,7 +116,7 @@ int main(){
             //==========================RESTART==========================//
             ///restartVars() is defined in controls.cpp, open it for more info about the function.
             //restartVars() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-            restartVars(restart, carState, road, npcCar, carHood, pieces, score, lamp);
+            restartVars(restart, carState, road, npcCar, carHood, pieces, score, lamp, night);
 
             //==========================HIGHSCORE==========================//
             ///Checks if the player has beat the highscore when the game is lost.
@@ -143,7 +145,7 @@ int main(){
             //==========================DRAWING==========================//
             ///drawSprites() is defined in animations.cpp, open it for more info about the function.
             //drawSprites() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-            drawSprites(render, carState, road, car, npcCar, img, screen);
+            drawSprites(render, carState, road, car, npcCar, img, screen, night.active, rain.active);
 
             //==========================CAR=PIECES=ANIMATIONS==========================//
             ///drawAnimation() is defined in animations.cpp, open it for more info about the function.
@@ -170,6 +172,9 @@ int main(){
                 NPCCarLoop(npcCar, score, screen, car);
             }
 
+            //============================NIGHT===========================
+            toggleNight(render, night, score);
+
             //==========================LAMP=LOOP==========================//
             ///lampLoop() is defined in animations.cpp, open it for more info about the function.
             //lampLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
@@ -178,8 +183,19 @@ int main(){
             ///Defines the position and the size of the lamp sprite, and draws it on the screen.
             //Define a posição e o tamanho do sprite do poste, e o desenha na tela.
             SDL_Rect lampPos = {lamp.x, 0, toi(600*screen.hScale), toi(600*screen.hScale)};
-            SDL_RenderCopy(render, img.lampSprite, nullptr, &lampPos);
+            if(night.active){
+            SDL_RenderCopy(render, img.lampSpriteOn, nullptr, &lampPos);
+            } else {
+                SDL_RenderCopy(render, img.lampSpriteOff, nullptr, &lampPos);
+            }
 
+            //=============================RAIN==============================//
+            rain.count++;
+            if(rain.count % 5 == 0){
+                rain.cut.y += (rand() % 6 + 1) * 600;
+                rain.cut.y = rain.cut.y % 4200;
+            }
+            SDL_RenderCopy(render, img.rainSprite, &rain.cut, nullptr);
             //==========================WRITE=SCORE==========================//
             ///writeText() is defined in text.cpp, open it for more info about the function.
             //writeText() é definida no arquivo "text.cpp", acesse-o para mais informações sobre a função.
@@ -200,15 +216,18 @@ int main(){
             } else {
                 car.moveCounter = 0;
             }
-
             //==========================HITBOXES==========================//
             ///carCollision() is defined in controls.cpp, open it for more info about the function.
             //carCollision() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
             carCollision(mouse, car, npcCar, screen, carState, explosion);
 
-            ///Enable this line to show the player's hitbox
-            //Ative esta linha para mostrar a hitbox do jogador.
-            //SDL_RenderFillRect(render, &car.pos);
+            ///Enable these lines to show the hitboxes.
+            //Ative estas linhas para mostrar as hitboxes.
+            /*SDL_SetRenderDrawColor(render, 255, 0, 0, 128);
+            SDL_RenderFillRect(render, &car.pos);
+            for(int i = 0; i < 2; i++){
+                SDL_RenderFillRect(render, &npcCar[i].pos);
+            }*/
 
         //=========================================================MENU==============================================//
         ///===============================THIS PART RUNS BEFORE THE PLAYER HITS START===============================///

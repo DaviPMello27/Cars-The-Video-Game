@@ -13,9 +13,11 @@ void drawCursor(SDL_Renderer *renderer, SDL_Point mousePosition, SDL_Texture *cu
 
 void drawAnimation(SDL_Renderer *renderer, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img images, Screen screen);
 
-void drawSprites(SDL_Renderer *renderer, int &carState, Road road, Car &car, NPCCar npcCar[2], Img images, Screen screen);
+void drawSprites(SDL_Renderer *renderer, int &carState, Road road, Car &car, NPCCar npcCar[2], Img images, Screen screen, bool night, bool rainActive);
 
 void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen);
+
+void toggleNight(SDL_Renderer* render, Night &night, int score);
 
 Img initImg(SDL_Renderer* render);
 

@@ -166,7 +166,7 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
 //
 //Reinicializa as variáveis para uma nova sessão de jogo.
 
-void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp){
+void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp, Night &night){
     if(restart == true){
         carState = 3;
         road.speed.x = 20;
@@ -180,6 +180,7 @@ void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], 
         road = {0, {30, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
         lamp = {800, 0};
         restart = false;
+        night = {0, false};
     }
 }
 
@@ -212,7 +213,7 @@ void carControl(Car &car, SDL_Point mouse, Screen screen){
     double newMouseY = mouse.y - 20 * screen.hScale;
     double newMouseX = mouse.x - 20 * screen.hScale;
     car.y += ((newMouseY - car.y)/10);
-    car.x += (newMouseX - car.x)/10;
+    car.x += ((newMouseX - car.x)/10);
 
     ///Sets the angles for the curves.
     //Muda o ângulo do carro nas curvas.
@@ -259,6 +260,12 @@ bool carCollision(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2], Screen screen,
         car.pos.w -= abs(((mouse.y - car.y)/3));
         car.pos.x += abs(((mouse.y - car.y)/5));
         car.pos.y += ((mouse.y - car.y)/10);
+        car.pos.h -= 5;
+
+        npcCar[i].pos.h -= 10;
+        npcCar[i].pos.w -= 10;
+        npcCar[i].pos.x += 5;
+        npcCar[i].pos.y += 5;
 
         ///Decreases carState and resets the NPCCar position.
         //Diminui o carState e reinicializa a posição do carro NPC.

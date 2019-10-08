@@ -150,7 +150,7 @@ int roadLoop(Road &road, int carState, Screen screen){
 
 void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car){
     for(int i = 0; i < 2; i++){
-        if(npcCar[i].x < -212*screen.hScale){
+        if(npcCar[i].x < -500*screen.hScale){
             ///Anti stand-still counter:
             //Contador anti-ficar-parado:
             if(car.moveCounter > 150){
@@ -254,26 +254,41 @@ void drawNPCCarSkin(SDL_Renderer* render, Img img, NPCCar npcCar[2]){
 //
 //Desenha a estrada, o carro do jogador e os carros NPC.
 
-void drawSprites(SDL_Renderer *render, int &carState, Road road, Car &car, NPCCar npcCar[2], Img img, Screen screen){
+void drawSprites(SDL_Renderer *render, int &carState, Road road, Car &car, NPCCar npcCar[2], Img img, Screen screen, bool night, bool rainActive){
     ///Draws road:
     //Desenha a estrada:
     road.cut = {road.x, 0, screen.w, 600};
     road.pos = {0, 0, screen.w, screen.h};
-    SDL_RenderCopy(render, img.bgRoad, &road.cut, &road.pos);
+    if(rainActive){
+        SDL_RenderCopy(render, img.bgRoadRain, &road.cut, &road.pos);
+    } else {
+        SDL_RenderCopy(render, img.bgRoad, &road.cut, &road.pos);
+    }
+    if(carState > 0){
+        drawNPCCarSkin(render, img, npcCar);
+    }
 
     ///Draws car:
     //Desenha o carro:
     car.cut = {0, (3-carState)*212, 444, 212};
     if(carState > 0){
         SDL_RenderCopyEx(render, img.carSprite, &car.cut, &car.pos, car.angle.value, nullptr, SDL_FLIP_NONE);
+        if(night){
+            SDL_Point headlightsPoint = {toi(120 * screen.hScale), toi((211/2) * screen.hScale)};
+            SDL_Rect headlightsPos = {car.x - 150, toi(car.y - 82 * screen.hScale), toi(1212/2 * screen.hScale), toi((422/2) * screen.hScale)};
+            SDL_RenderCopyEx(render, img.headLights, nullptr, &headlightsPos, car.angle.value, &headlightsPoint, SDL_FLIP_NONE);
+        }
     } else {
         carCrash(car, carState, screen);
         car.pos = {car.x - 61, car.y - 50, toi((444/2.5)*screen.hScale), toi((212/2.5)*(screen.hScale))};
         car.cut = {0, 424, 444, 212};
         SDL_RenderCopyEx(render, img.carSprite, &car.cut, &car.pos, car.angle.value, nullptr, SDL_FLIP_NONE);
     }
-    if(carState > 0){
-        drawNPCCarSkin(render, img, npcCar);
+    if(night && carState > 0){
+        for(int i = 0; i < 2; i++){
+            SDL_Rect headlightsPos = {npcCar[i].x - 50, toi(npcCar[i].y - 55 * screen.hScale), toi(1212/2 * screen.hScale), toi((422/2) * screen.hScale)};
+            SDL_RenderCopy(render, img.headLights, nullptr, &headlightsPos);
+        }
     }
 }
 
@@ -326,6 +341,21 @@ void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Scree
     SDL_RenderCopy(render, img.explosion, &explosion.spriteCut, &explosion.spritePos);
 }
 
+void toggleNight(SDL_Renderer* render, Night &night, int score){
+    SDL_SetRenderDrawColor(render, 0, 0, 0, static_cast<Uint8>(night.threshold));
+    SDL_RenderFillRect(render, nullptr);
+    if(score % 80 >= 50 && night.threshold < 135){
+        night.threshold++;
+    } else if (score % 80 < 50 && night.threshold > 0){
+        night.threshold--;
+    }
+    if(night.threshold == 135){
+        night.active = true;
+    } else if(night.threshold == 0){
+        night.active = false;
+    }
+}
+
 
 ///initImg():
 ///
@@ -340,7 +370,9 @@ Img initImg(SDL_Renderer* render){
     img.carSprite = IMG_LoadTexture(render, "img/car.png");
     img.carPieces = IMG_LoadTexture(render, "img/carPieces.png");
     img.carHoodSprite = IMG_LoadTexture(render, "img/carHood.png");
+    img.headLights = IMG_LoadTexture(render, "img/headLights.png");
     img.bgRoad = IMG_LoadTexture(render, "img/road.png");
+    img.bgRoadRain = IMG_LoadTexture(render, "img/rainRoad.png");
     img.npcCarSprite = IMG_LoadTexture(render, "img/otherCars.png");
     img.npcCarSprite2 = IMG_LoadTexture(render, "img/otherCars2.png");
     img.npcCarSprite3 = IMG_LoadTexture(render, "img/otherCars3.png");
@@ -349,7 +381,9 @@ Img initImg(SDL_Renderer* render){
     img.explosion = IMG_LoadTexture(render, "img/explosion.png");
     img.font = IMG_LoadTexture(render, "img/font.png");
     img.cursor = IMG_LoadTexture(render, "img/cursor.png");
-    img.lampSprite = IMG_LoadTexture(render, "img/lamp.png");
+    img.lampSpriteOn = IMG_LoadTexture(render, "img/lampOn.png");
+    img.lampSpriteOff = IMG_LoadTexture(render, "img/lampOff.png");
+    img.rainSprite = IMG_LoadTexture(render, "img/rain.png");
     return img;
 }
 
@@ -365,6 +399,7 @@ Img initImg(SDL_Renderer* render){
 void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.carSprite);
     SDL_DestroyTexture(img.bgRoad);
+    SDL_DestroyTexture(img.bgRoadRain);
     SDL_DestroyTexture(img.npcCarSprite);
     SDL_DestroyTexture(img.npcCarSprite2);
     SDL_DestroyTexture(img.npcCarSprite3);
@@ -373,9 +408,12 @@ void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.explosion);
     SDL_DestroyTexture(img.carPieces);
     SDL_DestroyTexture(img.carHoodSprite);
+    SDL_DestroyTexture(img.headLights);
     SDL_DestroyTexture(img.font);
     SDL_DestroyTexture(img.cursor);
-    SDL_DestroyTexture(img.lampSprite);
+    SDL_DestroyTexture(img.lampSpriteOn);
+    SDL_DestroyTexture(img.lampSpriteOff);
+    SDL_DestroyTexture(img.rainSprite);
     SDL_DestroyRenderer(render);
     SDL_DestroyWindow(mainWindow);
 }
