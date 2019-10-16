@@ -25,6 +25,14 @@ struct Img {
     SDL_Texture* lampSpriteOn;
     SDL_Texture* lampSpriteOff;
     SDL_Texture* rainSprite;
+    SDL_Texture* truckSprite;
+    SDL_Texture* crateSprite;
+};
+
+struct Debug {
+    bool active;
+    int passwordCounter;
+    bool NPCCars;
 };
 
 struct Screen {
@@ -64,12 +72,32 @@ struct NPCCar {
     SDL_Rect pos;
 };
 
+struct Drift {
+    int counter;
+    int factor;
+};
+
 struct Car {
     int x;
     int y;
+    int health;
     Angle angle;
     Speed speed;
+    Drift drift;
     int moveCounter;
+    SDL_Rect cut;
+    SDL_Rect pos;
+};
+
+struct Boss {
+    int x;
+    int y;
+    Speed speed;
+    bool active;
+    bool defineVars;
+    bool attacks;
+    int endCounter;
+    SDL_Point crate;
     SDL_Rect cut;
     SDL_Rect pos;
 };
@@ -105,6 +133,8 @@ struct Night {
 
 struct Rain {
     int count;
+    int start;
+    int puddleCount;
     bool active;
     SDL_Rect cut;
 };

@@ -40,7 +40,7 @@ void createButton(SDL_Renderer *render, SDL_Point &mouse, int x, int y, int w, i
 //
 //Desenha o título e os botões. São centralizados no eixo x.
 
-void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, int &carState, Screen screen, int highscore){
+void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &car, Screen screen, int highscore){
     SDL_Rect bgCut = {0, 0, 800, 600};
     SDL_RenderCopy(render, img.bgRoad, &bgCut, nullptr);
     SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
@@ -63,8 +63,7 @@ void drawMenu(SDL_Renderer *render, Menu &menu, SDL_Point mouse, Img img, Car &c
                 menu.speed.y = 3;
                 menu.animate = false;
                 menu.state = 0;
-                car = {mouse.x, mouse.y, {0, 0}, {0, 0}, 0, {0, 0, 0, 0}, {0, 0, 0, 0}};
-                carState = 3;
+                car = {mouse.x, mouse.y, 3, {0, 0}, {0, 0}, {0, 0}, 0, {0, 0, 0, 0}, {0, 0, 0, 0}};
             }
         }
     } else if(menu.state == 2){

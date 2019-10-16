@@ -86,10 +86,10 @@ void carCrash(Car &car, int &carState, Screen screen){
 //
 //Aplica as animações aos sprites.
 
-void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img img, Screen screen){
+void drawAnimation(SDL_Renderer *render, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img img, Screen screen){
     ///Car pieces (first and second hit):
     //Peças do carro (na primeira e segunda colisão):
-    if(carState == 2 || carState == 1){
+    if(car.health == 2 || car.health == 1){
         for(int i = 0; i < 3; i++){
             pieces[i].cut = {i*20, 0, 20, 12};
             pieces[i].pos = {pieces[i].x, pieces[i].y, toi((20/2) * screen.hScale), toi((12/2) * screen.hScale)};
@@ -98,7 +98,7 @@ void drawAnimation(SDL_Renderer *render, int carState, CarPiece (&pieces)[3], Ca
     }
     ///Car pieces and hood (second hit):
     //Peças do carro e capô (segunda colisão):
-    if(carState == 1 && carHood.x > -50){
+    if(car.health == 1 && carHood.x > -50){
         ///Reset the pieces:
         //Reinicializar as peças:
         for(int i = 0; i < 3; i++){
@@ -148,9 +148,9 @@ int roadLoop(Road &road, int carState, Screen screen){
 //
 //Reinicializa as posições dos carros NPC, ou os move.
 
-void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car){
+void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool restart){
     for(int i = 0; i < 2; i++){
-        if(npcCar[i].x < -500*screen.hScale){
+        if(npcCar[i].x < -500 * screen.hScale && !restart){
             ///Anti stand-still counter:
             //Contador anti-ficar-parado:
             if(car.moveCounter > 150){
@@ -165,12 +165,12 @@ void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car){
                 npcCar[i].y = rand() % (screen.h-100) + 50;
             }
 
+            score++;
+
             ///Sets the speed and the sprite:
             //Seleciona a velocidade e o sprite:
-            npcCar[i].speed.x = rand() % 10 + 15;
+            npcCar[i].speed.x = (rand() % 10 + 15);
             npcCar[i].skin = rand() % 15;
-
-            score++;
 
             ///Checks if the cars arent too next to each other, in relation to the x-axis:
             //Checa se os carros não estão muito pertos um do outro em relação ao eixo x:
@@ -254,24 +254,33 @@ void drawNPCCarSkin(SDL_Renderer* render, Img img, NPCCar npcCar[2]){
 //
 //Desenha a estrada, o carro do jogador e os carros NPC.
 
-void drawSprites(SDL_Renderer *render, int &carState, Road road, Car &car, NPCCar npcCar[2], Img img, Screen screen, bool night, bool rainActive){
+void drawSprites(SDL_Renderer *render, Road road, Car &car, NPCCar npcCar[2], Img img, Screen screen, bool night, Rain rain){
     ///Draws road:
     //Desenha a estrada:
     road.cut = {road.x, 0, screen.w, 600};
     road.pos = {0, 0, screen.w, screen.h};
-    if(rainActive){
-        SDL_RenderCopy(render, img.bgRoadRain, &road.cut, &road.pos);
+    if(rain.active){
+        if(rain.puddleCount){
+            SDL_RenderCopy(render, img.bgRoad, &road.cut, &road.pos);
+        } else {
+            SDL_RenderCopy(render, img.bgRoadRain, &road.cut, &road.pos);
+        }
     } else {
-        SDL_RenderCopy(render, img.bgRoad, &road.cut, &road.pos);
+        if(rain.puddleCount){
+            SDL_RenderCopy(render, img.bgRoadRain, &road.cut, &road.pos);
+        } else {
+            SDL_RenderCopy(render, img.bgRoad, &road.cut, &road.pos);
+        }
     }
-    if(carState > 0){
+    if(car.health > 0){
         drawNPCCarSkin(render, img, npcCar);
     }
 
     ///Draws car:
     //Desenha o carro:
-    car.cut = {0, (3-carState)*212, 444, 212};
-    if(carState > 0){
+    car.cut = {0, (3 - car.health)*212, 444, 212};
+    SDL_SetTextureAlphaMod(img.headLights, (road.x % 90) + 195);
+    if(car.health > 0){
         SDL_RenderCopyEx(render, img.carSprite, &car.cut, &car.pos, car.angle.value, nullptr, SDL_FLIP_NONE);
         if(night){
             SDL_Point headlightsPoint = {toi(120 * screen.hScale), toi((211/2) * screen.hScale)};
@@ -279,12 +288,12 @@ void drawSprites(SDL_Renderer *render, int &carState, Road road, Car &car, NPCCa
             SDL_RenderCopyEx(render, img.headLights, nullptr, &headlightsPos, car.angle.value, &headlightsPoint, SDL_FLIP_NONE);
         }
     } else {
-        carCrash(car, carState, screen);
+        carCrash(car, car.health, screen);
         car.pos = {car.x - 61, car.y - 50, toi((444/2.5)*screen.hScale), toi((212/2.5)*(screen.hScale))};
         car.cut = {0, 424, 444, 212};
         SDL_RenderCopyEx(render, img.carSprite, &car.cut, &car.pos, car.angle.value, nullptr, SDL_FLIP_NONE);
     }
-    if(night && carState > 0){
+    if(night && car.health > 0){
         for(int i = 0; i < 2; i++){
             SDL_Rect headlightsPos = {npcCar[i].x - 50, toi(npcCar[i].y - 55 * screen.hScale), toi(1212/2 * screen.hScale), toi((422/2) * screen.hScale)};
             SDL_RenderCopy(render, img.headLights, nullptr, &headlightsPos);
@@ -341,12 +350,10 @@ void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Scree
     SDL_RenderCopy(render, img.explosion, &explosion.spriteCut, &explosion.spritePos);
 }
 
-void toggleNight(SDL_Renderer* render, Night &night, int score){
-    SDL_SetRenderDrawColor(render, 0, 0, 0, static_cast<Uint8>(night.threshold));
-    SDL_RenderFillRect(render, nullptr);
-    if(score % 80 >= 50 && night.threshold < 135){
+void toggleNight(Night &night, int score){
+    if(score % 160 >= 80 && night.threshold < 135){
         night.threshold++;
-    } else if (score % 80 < 50 && night.threshold > 0){
+    } else if (score % 160 < 80 && night.threshold > 0){
         night.threshold--;
     }
     if(night.threshold == 135){
@@ -356,6 +363,29 @@ void toggleNight(SDL_Renderer* render, Night &night, int score){
     }
 }
 
+void toggleRain(SDL_Renderer* render, Rain &rain, SDL_Texture* sprite, int score){
+    if(score == rain.start && rain.active == false){
+        rain.active = true;
+        rain.puddleCount = 500;
+    }
+    if(rain.active){
+        if(score >= rain.start && score < rain.start + 40){
+            rain.count++;
+            if(rain.count % 5 == 0){
+                rain.cut.y += (rand() % 6 + 1) * 600;
+                rain.cut.y = rain.cut.y % 4200;
+            }
+            SDL_RenderCopy(render, sprite, &rain.cut, nullptr);
+        } else {
+            rain.start = score + 40 + (rand() % 30);
+            rain.active = false;
+            rain.puddleCount = 500;
+        }
+    }
+    if(rain.puddleCount > 0){
+        rain.puddleCount--;
+    }
+}
 
 ///initImg():
 ///
@@ -384,6 +414,8 @@ Img initImg(SDL_Renderer* render){
     img.lampSpriteOn = IMG_LoadTexture(render, "img/lampOn.png");
     img.lampSpriteOff = IMG_LoadTexture(render, "img/lampOff.png");
     img.rainSprite = IMG_LoadTexture(render, "img/rain.png");
+    img.truckSprite = IMG_LoadTexture(render, "img/truck.png");
+    img.crateSprite = IMG_LoadTexture(render, "img/crate.png");
     return img;
 }
 
@@ -414,6 +446,8 @@ void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.lampSpriteOn);
     SDL_DestroyTexture(img.lampSpriteOff);
     SDL_DestroyTexture(img.rainSprite);
+    SDL_DestroyTexture(img.truckSprite);
+    SDL_DestroyTexture(img.crateSprite);
     SDL_DestroyRenderer(render);
     SDL_DestroyWindow(mainWindow);
 }

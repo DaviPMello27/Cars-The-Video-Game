@@ -23,7 +23,7 @@
 //
 //Determina o que acontece ao clicar em um botão. Mais informações dentro da função.
 
-void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore, int carState, Menu &menu, SDL_Point mouse, Screen &screen){
+void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore, int &carHealth, Menu &menu, SDL_Point mouse, Screen &screen, Debug &debug, Rain &rain, Night &night, int &score){
     SDL_Event gameEvent;
     while(SDL_PollEvent(&gameEvent)){
         switch(gameEvent.type){
@@ -41,11 +41,6 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
                         //R para recomeçar.
                         restart = true;
                     break;
-                    case SDLK_q:
-                        ///Q para finalizar.
-                        //Q para finalizar.
-                        end = true;
-                    break;
                     case SDLK_ESCAPE:
                         ///ESC to return to the menu.
                         //ESC para retornar ao menu.
@@ -60,6 +55,89 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
                     } else {
                         SDL_SetWindowFullscreen(mainWindow, 0);
                         screen.full = false;
+                    }
+                    break;
+                    ///Debug keys:
+                    //Teclas de debug:
+                    case SDLK_z:
+                        if(debug.active){
+                            if(!night.active){
+                                night.threshold = 135;
+                            } else {
+                                night.threshold = 0;
+                            }
+                            if(night.threshold == 135){
+                                night.active = true;
+                            } else if(night.threshold == 0){
+                                night.active = false;
+                            }
+                        }
+                    break;
+                    case SDLK_x:
+                        if(debug.active){
+                            if(!debug.NPCCars){
+                                debug.NPCCars = true;
+                            } else {
+                                debug.NPCCars = false;
+                            }
+                        }
+                    break;
+                    case SDLK_c:
+                        if(debug.active){
+                            if(!rain.active){
+                                rain.active = true;
+                                rain.puddleCount = 500;
+                                rain.start = score;
+                            } else {
+                                rain.start = score + 40 + (rand() % 30);
+                                rain.active = false;
+                                rain.puddleCount = 0;
+                            }
+                        }
+                    break;
+                    case SDLK_h:
+                        if(debug.active && carHealth < 3){
+                            carHealth++;
+                        }
+                    break;
+                    case SDLK_s:
+                        if(debug.active){
+                            score += 10;
+                        }
+                    break;
+                    ///Debug password keys:
+                    //Teclas da senha de debug:
+                    case SDLK_d:
+                        if(!debug.active && debug.passwordCounter == 0){
+                            debug.passwordCounter++;
+                        } else {
+                            debug.passwordCounter = 0;
+                        }
+                    break;
+                    case SDLK_a:
+                        if(!debug.active && debug.passwordCounter == 1){
+                            debug.passwordCounter++;
+                        } else {
+                            debug.passwordCounter = 0;
+                        }
+                    break;
+                    case SDLK_v:
+                        if(!debug.active && debug.passwordCounter == 2){
+                            debug.passwordCounter++;
+                        } else {
+                            debug.passwordCounter = 0;
+                        }
+                    break;
+                    case SDLK_i:
+                        if(!debug.active && debug.passwordCounter == 3){
+                            debug.passwordCounter++;
+                        } else {
+                            debug.passwordCounter = 0;
+                        }
+                    break;
+                    default:
+                    if(!debug.active){
+                        debug.passwordCounter = 0;
                     }
                     break;
                 }
@@ -147,7 +225,7 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
                     //====================ESTA PARTE É EXECUTADA DURANTE O JOGO====================//
                     ///Click to restart:
                     //Clicar para recomeçar:
-                    if(menu.state == 0 && carState < 1){
+                    if(menu.state == 0 && carHealth < 1){
                         restart = true;
                     }
                     break;
@@ -166,10 +244,9 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
 //
 //Reinicializa as variáveis para uma nova sessão de jogo.
 
-void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp, Night &night){
+void restartVars(bool &restart, int &carHealth, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp, Night &night, Rain &rain, Boss &truck){
     if(restart == true){
-        carState = 3;
-        road.speed.x = 20;
+        carHealth = 3;
         npcCar[0] = {3000, rand() % 410 + 50, rand() % 15, {20, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
         npcCar[1] = {4000, rand() % 410 + 50, rand() % 15, {20, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
         carHood = {0, 0, {0, 0}, {0, 0}, false, {0, 0, 0, 0}, {0, 0, 0, 0}};
@@ -181,6 +258,8 @@ void restartVars(bool &restart, int &carState, Road &road, NPCCar (&npcCar)[2], 
         lamp = {800, 0};
         restart = false;
         night = {0, false};
+        rain = {0, 40 + (rand() % 30), 0, false, {0, 0, 1000, 600}};
+        truck = {0, 0, {0, 0}, false, false, false, 0, {0, 0}, {0, 0, 197, 70}, {0, 0, 197/2, 70/2}};
     }
 }
 
@@ -207,18 +286,41 @@ SDL_Point getMouseXY(SDL_Point mouse){
 //
 //Move o carro com o mouse.
 
-void carControl(Car &car, SDL_Point mouse, Screen screen){
-    ///Delays the car's movement.
-    //Atrasa o movemento do carro.
-    double newMouseY = mouse.y - 20 * screen.hScale;
-    double newMouseX = mouse.x - 20 * screen.hScale;
-    car.y += ((newMouseY - car.y)/10);
-    car.x += ((newMouseX - car.x)/10);
-
-    ///Sets the angles for the curves.
-    //Muda o ângulo do carro nas curvas.
-    car.angle.value = (newMouseY - car.y)/5;
-
+void carControl(Car &car, SDL_Point mouse, Screen screen, Rain &rain){
+    if(!rain.active ^ (rain.puddleCount > 0)){
+        ///Delays the car's movement.
+        //Atrasa o movemento do carro.
+        double newMouseY = mouse.y - 20 * screen.hScale;
+        double newMouseX = mouse.x - 20 * screen.hScale;
+        car.y += ((newMouseY - car.y)/10);
+        car.x += ((newMouseX - car.x)/10);
+        ///Sets the angles for the curves.
+        //Muda o ângulo do carro nas curvas.
+        car.angle.value = (newMouseY - car.y)/5;
+    } else {
+        ///Delays the car's movement.
+        //Atrasa o movemento do carro.
+        double newMouseY = mouse.y - 20 * screen.hScale;
+        double newMouseX = mouse.x - 20 * screen.hScale;
+        if(abs(newMouseY - car.y) > 200 * screen.hScale){
+            car.drift.counter = 15;
+        }
+        if(car.drift.counter > 0){
+            car.drift.counter--;
+        }
+        if (car.drift.counter == 0) {
+            newMouseY = mouse.y - 20 * screen.hScale;
+            car.y += ((newMouseY - car.y)/10);
+            car.drift.factor = 0;
+        } else {
+            car.drift.factor += ((newMouseY - car.y)/200);
+            car.y += car.drift.factor;
+        }
+        car.x += ((newMouseX - car.x)/10);
+        ///Sets the angles for the curves.
+        //Muda o ângulo do carro nas curvas.
+        car.angle.value = ((mouse.y - 20 * screen.hScale) - car.y)/5;
+    }
     ///Limits the cars movement in the y-axis.
     //Limita o movimento do carro no eixo y.
     if(car.y < toi(70*screen.hScale)){
@@ -253,24 +355,12 @@ bool collide(SDL_Rect first, SDL_Rect second){
 //
 //Define o que acontece quando dois carros colidem.
 
-bool carCollision(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2], Screen screen, int &carState, Animation &explosion){
+bool carCollision(Car &car, NPCCar (&npcCar)[2], Screen screen, Animation &explosion){
     for(int i = 0; i < 2; i++){
-        ///Decreases the player's car's hitbox's width based on the angle, to adapt to the sprite.
-        //Diminui a largura da hitbox do carro do jogador baseado no ângulo, para adaptar ao sprite.
-        car.pos.w -= abs(((mouse.y - car.y)/3));
-        car.pos.x += abs(((mouse.y - car.y)/5));
-        car.pos.y += ((mouse.y - car.y)/10);
-        car.pos.h -= 5;
-
-        npcCar[i].pos.h -= 10;
-        npcCar[i].pos.w -= 10;
-        npcCar[i].pos.x += 5;
-        npcCar[i].pos.y += 5;
-
-        ///Decreases carState and resets the NPCCar position.
-        //Diminui o carState e reinicializa a posição do carro NPC.
+        ///Decreases carHealth and resets the NPCCar position.
+        //Diminui o carHealth e reinicializa a posição do carro NPC.
         if(collide(car.pos, npcCar[i].pos)){
-            carState--;
+            car.health--;
             npcCar[i].x = screen.w + 500;
             npcCar[i].speed.x = rand() % 10 + 10;
             if(car.moveCounter > 150){
@@ -288,4 +378,22 @@ bool carCollision(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2], Screen screen,
         }
     }
     return false;
+}
+
+void changeHitbox(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2]){
+    ///Decreases the player's car's hitbox's width based on the angle, to adapt to the sprite.
+    //Diminui a largura da hitbox do carro do jogador baseado no ângulo, para adaptar ao sprite.
+    car.pos.w -= abs(((mouse.y - car.y)/3));
+    car.pos.x += abs(((mouse.y - car.y)/5));
+    car.pos.y += ((mouse.y - car.y)/10);
+    car.pos.h -= 5;
+
+    ///Shrinks the NPC cars' hitboxes:
+    //Diminui a hitbox dos carros NPC:
+    for(int i = 0; i < 2; i++){
+        npcCar[i].pos.h -= 10;
+        npcCar[i].pos.w -= 10;
+        npcCar[i].pos.x += 5;
+        npcCar[i].pos.y += 5;
+    }
 }

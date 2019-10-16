@@ -17,6 +17,7 @@
 #include <windows.h>
 #include "structs.h"
 #include "animations.h"
+#include "boss.h"
 #include "controls.h"
 #include "text.h"
 #include "menu.h"
@@ -33,7 +34,7 @@ int main(){
     //==========================INIT==========================//
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
-    SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, SDL_WINDOW_RESIZABLE);
+    SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
 
     ///SDL_SetWindowDisplayMode() to set the window's display mode to default to prevent refresh rate issues.
     //SDL_SetWindowDisplayMode() para definir o modo de display da janela, para previnir problemas com o taxa de atualização do monitor.
@@ -55,18 +56,20 @@ int main(){
     //As variáveis são todas definidas aqui. Algumas serão inicializadas, quando o jogador clica "start", na função restart().
     Road road;
     Car car;
+    Boss truck;
     SDL_Point mouse, lamp;
     NPCCar npcCar[2];
     CarPiece carHood;
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
     Animation explosion;
-    Rain rain = {0, true, {0, 0, 1000, 600}};
-    Night night = {0, false};
+    Rain rain;
+    Night night;
+    Debug debug = {false, 0, true};
 
     ///CARSTATE: > 3 means the player hasn't lost yet. < 0 means the game is over.
     //CARSTATE: > 3 significa que o jogador ainda não perdeu. < 0 significa que o jogo acabou.
-    int carState = 3, score, highscore;
+    int score = 0, highscore;
     bool end = false, restart = false;
 
     //==========================TEXTURES==========================//
@@ -88,7 +91,7 @@ int main(){
         //-----EVENT-----//
         ///eventCheck() is defined in controls.cpp, open it for more info about the function.
         //eventCheck() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-        eventCheck(mainWindow, end, restart, highscore, carState, menu, mouse, screen);
+        eventCheck(mainWindow, end, restart, highscore, car.health, menu, mouse, screen, debug, rain, night, score);
 
         //==========================RESOLUTION==========================//
         ///Updates the screen size values every frame because the window is resizeable by dragging.
@@ -105,6 +108,10 @@ int main(){
         //Pega a posição do mouse.
         mouse = getMouseXY(mouse);
 
+        //==========================DEBUG=MODE==========================//
+        if(!debug.active && debug.passwordCounter == 4){
+            debug.active = true;
+        }
         ///===============================THIS PART RUNS AFTER THE PLAYER HITS START===============================///
         //===========================ESSA PARTE É EXECUTADA APÓS O JOGADOR CLICAR "START"===========================//
         if(menu.state == 0){
@@ -116,22 +123,23 @@ int main(){
             //==========================RESTART==========================//
             ///restartVars() is defined in controls.cpp, open it for more info about the function.
             //restartVars() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-            restartVars(restart, carState, road, npcCar, carHood, pieces, score, lamp, night);
+            restartVars(restart, car.health, road, npcCar, carHood, pieces, score, lamp, night, rain, truck);
 
             //==========================HIGHSCORE==========================//
             ///Checks if the player has beat the highscore when the game is lost.
             //Checa se o jogador bateu o recorde quando ele perde.
-            if(carState == 0 && score > highscore){
+            if(car.health == 0 && score > highscore){
                 highscore = setHighscore(score);
             }
 
             //==========================CONTROLS==========================//
+
             ///Lets the player controls the car if he hasn't lost the game.
             //Permite que o jogador controle o carro se ele ainda não perdeu.
-            if(carState > 0){
+            if(car.health > 0){
                 ///carControl() is defined in controls.cpp, open it for more info about the function.
                 //carControl() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-                carControl(car, mouse, screen);
+                carControl(car, mouse, screen, rain);
             }
 
             //==========================RECTS==========================//
@@ -145,17 +153,17 @@ int main(){
             //==========================DRAWING==========================//
             ///drawSprites() is defined in animations.cpp, open it for more info about the function.
             //drawSprites() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-            drawSprites(render, carState, road, car, npcCar, img, screen, night.active, rain.active);
+            drawSprites(render, road, car, npcCar, img, screen, night.active, rain);
 
             //==========================CAR=PIECES=ANIMATIONS==========================//
             ///drawAnimation() is defined in animations.cpp, open it for more info about the function.
             //drawAnimation() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-            drawAnimation(render, carState, pieces, car, carHood, img, screen);
+            drawAnimation(render, pieces, car, carHood, img, screen);
 
             //==========================ROADLOOP==========================//
             ///roadLoop() is defined in animations.cpp, open it for more info about the function.
             //roadLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-            road.x = roadLoop(road, carState, screen);
+            road.x = roadLoop(road, car.health, screen);
 
             //==========================EXPLOSION==========================//
             ///explodeAnimation() is defined in animations.cpp, open it for more info about the function.
@@ -166,15 +174,35 @@ int main(){
             //==========================NPCCAR=LOOP==========================//
             ///Moves the NPC cars across the screen.
             //Move os carros dos NPCs na tela.
-            if(carState > 0){
+            if(car.health > 0 && debug.NPCCars){
                 ///NPCCarLoop() is defined in animations.cpp, open it for more info about the function.
                 //NPCCarLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-                NPCCarLoop(npcCar, score, screen, car);
+                NPCCarLoop(npcCar, score, screen, car, truck.active);
+            } else {
+                npcCar[0].x = screen.w + 400;
+                npcCar[1].x = screen.w + 100;
+            }
+
+            //==========================TRUCK==========================//
+            if(truck.active){
+                ///truckBehavior() is defined in boss.cpp, open it for more info about the function.
+                //truckBehavior() é definida no arquivo "boss.cpp", acesse-o para mais informações sobre a função.
+                truckBehavior(render, truck, img, car, screen, score);
+            }
+
+            ///Truck trigger:
+            //Ativador do caminhão:
+            if((score != 0) && (score % 100 == 0) && (!truck.active)){
+                truck.active = true;
+                truck.defineVars = true;
             }
 
             //============================NIGHT===========================
-            toggleNight(render, night, score);
-
+            SDL_SetRenderDrawColor(render, 0, 0, 0, static_cast<Uint8>(night.threshold));
+            SDL_RenderFillRect(render, nullptr);
+            if(!debug.active){
+                toggleNight(night, score);
+            }
             //==========================LAMP=LOOP==========================//
             ///lampLoop() is defined in animations.cpp, open it for more info about the function.
             //lampLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
@@ -190,20 +218,16 @@ int main(){
             }
 
             //=============================RAIN==============================//
-            rain.count++;
-            if(rain.count % 5 == 0){
-                rain.cut.y += (rand() % 6 + 1) * 600;
-                rain.cut.y = rain.cut.y % 4200;
-            }
-            SDL_RenderCopy(render, img.rainSprite, &rain.cut, nullptr);
+            toggleRain(render, rain, img.rainSprite, score);
+
             //==========================WRITE=SCORE==========================//
             ///writeText() is defined in text.cpp, open it for more info about the function.
             //writeText() é definida no arquivo "text.cpp", acesse-o para mais informações sobre a função.
             writeText(render, score, img.font, toi((screen.w / 2.0f) - 30), 30);
 
             ///The text showing the highscore is displayed only when the player loses or when he hasn't scored yet.
-            //O text mostrando o recorde é mostrado apenas quando o jogador perde ou quando ele ainda não pontuou.
-            if(carState < 1 || score == 0){
+            //O texto mostrando o recorde é mostrado apenas quando o jogador perde ou quando ele ainda não pontuou.
+            if(car.health < 1 || score == 0){
                 string scoreText = "Highscore: " + to_string(highscore);
                 writeText(render, scoreText, img.font, screen.w / 2 - 90, 100, 14, 24);
             }
@@ -217,9 +241,11 @@ int main(){
                 car.moveCounter = 0;
             }
             //==========================HITBOXES==========================//
+
+            changeHitbox(mouse, car, npcCar);
             ///carCollision() is defined in controls.cpp, open it for more info about the function.
             //carCollision() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-            carCollision(mouse, car, npcCar, screen, carState, explosion);
+            carCollision(car, npcCar, screen, explosion);
 
             ///Enable these lines to show the hitboxes.
             //Ative estas linhas para mostrar as hitboxes.
@@ -235,11 +261,17 @@ int main(){
         } else if(menu.state > 0){
             ///drawMenu() is defined in menu.cpp, open it for more info about the function.
             //drawMenu() é definida no arquivo "menu.cpp", acesse-o para mais informações sobre a função.
-            drawMenu(render, menu, mouse, img, car, carState, screen, highscore);
+            drawMenu(render, menu, mouse, img, car, screen, highscore);
         }
         ///drawCursor() is defined in animations.cpp, open it for more info about the function.
         //drawCursor() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
         drawCursor(render, mouse, img.cursor);
+
+        ///Debug notification:
+        //Notificação de debug:
+        if(debug.active){
+            writeText(render, "Debug Mode", img.font, 5, 5, 14, 24);
+        }
 
         ///Displays everything that has been drawn on the screen.
         //Mostra tudo que foi desenhado na tela.

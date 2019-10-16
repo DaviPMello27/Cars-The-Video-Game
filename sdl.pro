@@ -7,6 +7,7 @@ RC_FILE += img/iconSet.rc
 RC_FILE += resource.rc
 
 SOURCES += main.cpp \
+    src/boss.cpp \
     src/highscore.cpp \
     src/resolution.cpp
 SOURCES += src/animations.cpp
@@ -26,6 +27,7 @@ INCLUDEPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
 DEPENDPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
 
 HEADERS += header/animations.h \
+    header/boss.h \
     header/highscore.h \
     header/resolution.h
 HEADERS += header/controls.h
