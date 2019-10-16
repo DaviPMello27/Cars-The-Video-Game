@@ -12,7 +12,7 @@ void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen 
         truck.speed.x = 25;
         truck.speed.y = ((rand() % 3) + 2) * screen.hScale;
         truck.crate.x = -100;
-        truck.endCounter = 3000;
+        truck.endCounter = 600;
         truck.attacks = false;
         truck.defineVars = false;
     }
@@ -27,13 +27,13 @@ void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen 
     } else if (truck.endCounter > 30 && truck.endCounter < 2800){
         truck.attacks = true;
         if(truck.y < 70){
-            if(truck.endCounter > 500){
+            if(truck.endCounter > 100){
                 truck.speed.y = ((rand() % 3) + 3) * screen.hScale;
             } else {
                 truck.speed.y = ((rand() % 3) + 6) * screen.hScale;
             }
         } else if (truck.y > (screen.h - 100)){
-            if(truck.endCounter > 500){
+            if(truck.endCounter > 100){
                 truck.speed.y = 0 - (((rand() % 3) + 3) * screen.hScale);
             } else {
                 truck.speed.y = 0 - ((rand() % 3) + 6) * screen.hScale;
@@ -53,12 +53,11 @@ void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen 
 
     ///Game over truck animation:
     //Animação do caminhão no game over:
-    if(car.health < 1){
+    if(car.health < 1 && truck.endCounter > 0){
         truck.speed.x++;
         truck.x += truck.speed.x;
         truck.attacks = false;
     }
-
     SDL_Rect cratePos = {truck.crate.x, truck.crate.y, toi(80 * screen.hScale), toi(80 * screen.hScale)};
     if(collide(car.pos, cratePos)){
         car.health--;
@@ -80,7 +79,7 @@ void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen 
 
     ///Final truck animation:
     //Animação final do caminhão:
-    if(truck.endCounter == 0 && car.health > 0){
+    if(truck.endCounter == 0){
         truck.attacks = false;
         truck.speed.x++;
         truck.x -= truck.speed.x;
