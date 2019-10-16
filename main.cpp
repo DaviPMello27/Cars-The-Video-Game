@@ -29,9 +29,10 @@ using namespace std;
 int main(){
     ///Hides console window:
     //Esconde a janela do console:
-    HWND windowHandle = GetConsoleWindow();
-    ShowWindow(windowHandle, SW_HIDE);
+    //HWND windowHandle = GetConsoleWindow();
+    //ShowWindow(windowHandle, SW_HIDE);
     //==========================INIT==========================//
+    cout << "nice";
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
     SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
@@ -271,6 +272,13 @@ int main(){
         //Notificação de debug:
         if(debug.active){
             writeText(render, "Debug Mode", img.font, 5, 5, 14, 24);
+            if(menu.state == 1){
+                writeText(render, "Press Z to toggle day and night;", img.font, 5, screen.h - 142, 14, 24);
+                writeText(render, "Press X to toggle NPC cars;", img.font, 5, screen.h - 116, 14, 24);
+                writeText(render, "Press C to toggle rain;", img.font, 5, screen.h - 87, 14, 24);
+                writeText(render, "Press H to heal;", img.font, 5, screen.h - 58, 14, 24);
+                writeText(render, "Press S to increase the score by 10;", img.font, 5, screen.h - 29, 14, 24);
+            }
         }
 
         ///Displays everything that has been drawn on the screen.
