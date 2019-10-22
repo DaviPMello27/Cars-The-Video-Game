@@ -5,7 +5,7 @@
 
 int roadLoop(Road &road, int carState, Screen screen);
 
-void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool restart);
+void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool restart, bool restart2);
 
 int lampLoop(SDL_Point &lampPosition, Road road, Screen screen);
 
@@ -15,7 +15,7 @@ void drawAnimation(SDL_Renderer *renderer, CarPiece (&pieces)[3], Car car, CarPi
 
 void drawSprites(SDL_Renderer *renderer, Road road, Car &car, NPCCar npcCar[2], Img images, Screen screen, bool night, Rain rain);
 
-void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen);
+void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion);
 
 void toggleNight(Night &night, int score);
 

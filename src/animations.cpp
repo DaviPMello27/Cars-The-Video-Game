@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - XX/XX/2019                            ///
+///                            09/09/2019 - 22/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -148,9 +148,9 @@ int roadLoop(Road &road, int carState, Screen screen){
 //
 //Reinicializa as posições dos carros NPC, ou os move.
 
-void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool restart){
+void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool restart, bool restart2){
     for(int i = 0; i < 2; i++){
-        if(npcCar[i].x < -500 * screen.hScale && !restart){
+        if(npcCar[i].x < -500 * screen.hScale && !restart && !restart2){
             ///Anti stand-still counter:
             //Contador anti-ficar-parado:
             if(car.moveCounter > 150){
@@ -310,10 +310,9 @@ void drawSprites(SDL_Renderer *render, Road road, Car &car, NPCCar npcCar[2], Im
 //
 //Desenha a animação da explosão;
 
-void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion, Screen screen){
+void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion){
     ///Sets the sprite position and applies the speed:
     //Define a posição do sprite e aplica a velocidade:
-    explosion.spritePos = {explosion.x, explosion.y, toi((201/1.5) * screen.hScale), toi((177/1.5) * screen.hScale)};
     explosion.x -= explosion.speed.x;
     explosion.speed.x /= 1.05;
 
@@ -416,6 +415,9 @@ Img initImg(SDL_Renderer* render){
     img.rainSprite = IMG_LoadTexture(render, "img/rain.png");
     img.truckSprite = IMG_LoadTexture(render, "img/truck.png");
     img.crateSprite = IMG_LoadTexture(render, "img/crate.png");
+    img.planeShadow = IMG_LoadTexture(render, "img/planeShadow.png");
+    img.bombShadow = IMG_LoadTexture(render, "img/bombShadow.png");
+    img.bomb = IMG_LoadTexture(render, "img/bomb.png");
     return img;
 }
 
@@ -448,6 +450,9 @@ void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.rainSprite);
     SDL_DestroyTexture(img.truckSprite);
     SDL_DestroyTexture(img.crateSprite);
+    SDL_DestroyTexture(img.planeShadow);
+    SDL_DestroyTexture(img.bombShadow);
+    SDL_DestroyTexture(img.bomb);
     SDL_DestroyRenderer(render);
     SDL_DestroyWindow(mainWindow);
 }

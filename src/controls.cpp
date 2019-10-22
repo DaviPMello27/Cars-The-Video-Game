@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - XX/XX/2019                            ///
+///                            09/09/2019 - 22/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -244,7 +244,7 @@ void eventCheck(SDL_Window* mainWindow, bool &end, bool &restart, int &highscore
 //
 //Reinicializa as variáveis para uma nova sessão de jogo.
 
-void restartVars(bool &restart, int &carHealth, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp, Night &night, Rain &rain, Boss &truck){
+void restartVars(bool &restart, int &carHealth, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lamp, Night &night, Rain &rain, Boss &truck, Boss &plane){
     if(restart == true){
         carHealth = 3;
         npcCar[0] = {3000, rand() % 410 + 50, rand() % 15, {20, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
@@ -260,6 +260,7 @@ void restartVars(bool &restart, int &carHealth, Road &road, NPCCar (&npcCar)[2],
         night = {0, false};
         rain = {0, 40 + (rand() % 30), 0, false, {0, 0, 1000, 600}};
         truck = {0, 0, {0, 0}, false, false, false, 0, {0, 0}, {0, 0, 197, 70}, {0, 0, 197/2, 70/2}};
+        plane = {0, 0, {0, 0}, false, false, false, 0, {0, 0}, {0, 0, 657, 591}, {0, 0, toi(657*1.5), toi(591*1.5)}};
     }
 }
 

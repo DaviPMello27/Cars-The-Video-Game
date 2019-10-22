@@ -1,7 +1,10 @@
 ﻿//////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - XX/XX/2019                            ///
+///                            09/09/2019 - 22/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
+
+///1987 lines
+//1987 linhas
 
 ///These will be the EN-US comments
 //Esses serão os comentários em PT-BR
@@ -32,7 +35,6 @@ int main(){
     //HWND windowHandle = GetConsoleWindow();
     //ShowWindow(windowHandle, SW_HIDE);
     //==========================INIT==========================//
-    cout << "nice";
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
     SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
@@ -58,6 +60,9 @@ int main(){
     Road road;
     Car car;
     Boss truck;
+    Boss plane;
+    Animation bomb;
+    SDL_RendererFlip planeFlip = SDL_FLIP_NONE;
     SDL_Point mouse, lamp;
     NPCCar npcCar[2];
     CarPiece carHood;
@@ -70,7 +75,7 @@ int main(){
 
     ///CARSTATE: > 3 means the player hasn't lost yet. < 0 means the game is over.
     //CARSTATE: > 3 significa que o jogador ainda não perdeu. < 0 significa que o jogo acabou.
-    int score = 0, highscore;
+    int score, highscore;
     bool end = false, restart = false;
 
     //==========================TEXTURES==========================//
@@ -124,12 +129,12 @@ int main(){
             //==========================RESTART==========================//
             ///restartVars() is defined in controls.cpp, open it for more info about the function.
             //restartVars() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-            restartVars(restart, car.health, road, npcCar, carHood, pieces, score, lamp, night, rain, truck);
+            restartVars(restart, car.health, road, npcCar, carHood, pieces, score, lamp, night, rain, truck, plane);
 
             //==========================HIGHSCORE==========================//
             ///Checks if the player has beat the highscore when the game is lost.
             //Checa se o jogador bateu o recorde quando ele perde.
-            if(car.health == 0 && score > highscore){
+            if(car.health == 0 && score > highscore && !debug.active){
                 highscore = setHighscore(score);
             }
 
@@ -169,8 +174,9 @@ int main(){
             //==========================EXPLOSION==========================//
             ///explodeAnimation() is defined in animations.cpp, open it for more info about the function.
             //explodeAnimation() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-            if(explosion.active){
-                explodeAnimation(render, img, explosion, screen);
+            if(explosion.active && !plane.active){
+                explosion.spritePos = {explosion.x, explosion.y, toi((201/1.5) * screen.hScale), toi((177/1.5) * screen.hScale)};
+                explodeAnimation(render, img, explosion);
             }
             //==========================NPCCAR=LOOP==========================//
             ///Moves the NPC cars across the screen.
@@ -178,7 +184,7 @@ int main(){
             if(car.health > 0 && debug.NPCCars){
                 ///NPCCarLoop() is defined in animations.cpp, open it for more info about the function.
                 //NPCCarLoop() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
-                NPCCarLoop(npcCar, score, screen, car, truck.active);
+                NPCCarLoop(npcCar, score, screen, car, truck.active, plane.active);
             } else {
                 npcCar[0].x = screen.w + 400;
                 npcCar[1].x = screen.w + 100;
@@ -193,12 +199,25 @@ int main(){
 
             ///Truck trigger:
             //Ativador do caminhão:
-            if((score != 0) && (score % 100 == 0) && (!truck.active)){
+            if((score % 200 == 100) && (!truck.active)){
                 truck.active = true;
                 truck.defineVars = true;
             }
+            //============================PLANE===========================//
+            if(plane.active){
+                ///planeBehavior() is defined in boss.cpp, open it for more info about the function.
+                //planeBehavior() é definida no arquivo "boss.cpp", acesse-o para mais informações sobre a função.
+                planeBehavior(render, plane, planeFlip, bomb, explosion, img, car, screen, score);
+            }
 
-            //============================NIGHT===========================
+            ///Plane trigger:
+            //Ativador do avião:
+            if((score != 0) && (score % 200 == 0) && (!plane.active)){
+                plane.active = true;
+                plane.defineVars = true;
+            }
+
+            //============================NIGHT===========================//
             SDL_SetRenderDrawColor(render, 0, 0, 0, static_cast<Uint8>(night.threshold));
             SDL_RenderFillRect(render, nullptr);
             if(!debug.active){

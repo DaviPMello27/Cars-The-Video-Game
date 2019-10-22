@@ -27,6 +27,9 @@ struct Img {
     SDL_Texture* rainSprite;
     SDL_Texture* truckSprite;
     SDL_Texture* crateSprite;
+    SDL_Texture* planeShadow;
+    SDL_Texture* bombShadow;
+    SDL_Texture* bomb;
 };
 
 struct Debug {
@@ -97,7 +100,7 @@ struct Boss {
     bool defineVars;
     bool attacks;
     int endCounter;
-    SDL_Point crate;
+    SDL_Point projectile;
     SDL_Rect cut;
     SDL_Rect pos;
 };
