@@ -373,7 +373,7 @@ bool carCollision(Car &car, NPCCar (&npcCar)[2], Screen screen, Animation &explo
             explosion.y = car.y + toi(car.angle.value * screen.hScale);
             explosion.speed.x = rand() % 5;
             explosion.counter = 0;
-            explosion.spriteCut = {0, 0, 201, 177};
+            explosion.spriteCut = {0, 0, 43, 38};
             explosion.active = true;
             return true;
         }

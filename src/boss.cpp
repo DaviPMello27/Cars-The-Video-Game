@@ -220,7 +220,7 @@ void planeBehavior(SDL_Renderer* render, Boss &plane, SDL_RendererFlip &planeFli
     //Quando atinge o chão, as variáveis da explosão são preparadas para executar a animação:
     } else if(bomb.counter == 0){
         explosion.counter = 0;
-        explosion.spriteCut = {0, 0, 201, 177};
+        explosion.spriteCut = {0, 0, 43, 38};
         explosion.active = true;
         explosion.x = bomb.spritePos.x - toi((201*2) * screen.hScale);
         explosion.y = bomb.spritePos.y - toi((177*2) * screen.hScale);

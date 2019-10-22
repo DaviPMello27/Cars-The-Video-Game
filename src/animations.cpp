@@ -323,22 +323,22 @@ void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion){
             explosion.spriteCut.x = 0;
         break;
         case 5:
-            explosion.spriteCut.x = 201;
+            explosion.spriteCut.x = 43;//201;
         break;
         case 10:
-            explosion.spriteCut.x = 402;
+            explosion.spriteCut.x = 86;//402;
         break;
         case 15:
-            explosion.spriteCut.x = 603;
+            explosion.spriteCut.x = 129;//603;
         break;
         case 20:
-            explosion.spriteCut.x = 804;
+            explosion.spriteCut.x = 172;//804;
         break;
         case 25:
-            explosion.spriteCut.x = 1005;
+            explosion.spriteCut.x = 215;//1005;
         break;
         case 30:
-            explosion.spriteCut.x = 1206;
+            explosion.spriteCut.x = 258;//1206;
         break;
         case 35:
             explosion.counter = -1;

@@ -32,8 +32,8 @@ using namespace std;
 int main(){
     ///Hides console window:
     //Esconde a janela do console:
-    //HWND windowHandle = GetConsoleWindow();
-    //ShowWindow(windowHandle, SW_HIDE);
+    HWND windowHandle = GetConsoleWindow();
+    ShowWindow(windowHandle, SW_HIDE);
     //==========================INIT==========================//
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
@@ -139,7 +139,6 @@ int main(){
             }
 
             //==========================CONTROLS==========================//
-
             ///Lets the player controls the car if he hasn't lost the game.
             //Permite que o jogador controle o carro se ele ainda não perdeu.
             if(car.health > 0){

@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
-CONFIG += qt
+CONFIG -= qt
 
 RC_FILE += img/iconSet.rc
 RC_FILE += resource.rc
@@ -25,6 +25,7 @@ win32: LIBS += -L$$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/lib/ -lS
 
 INCLUDEPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
 DEPENDPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
+
 
 HEADERS += header/animations.h \
     header/boss.h \
