@@ -65,6 +65,7 @@ int main(){
     SDL_RendererFlip planeFlip = SDL_FLIP_NONE;
     SDL_Point mouse, lamp;
     NPCCar npcCar[2];
+    PowerUp powerUp;
     CarPiece carHood;
     CarPiece pieces[3];
     Menu menu = {0, 1, {0, 5}, false};
@@ -129,7 +130,7 @@ int main(){
             //==========================RESTART==========================//
             ///restartVars() is defined in controls.cpp, open it for more info about the function.
             //restartVars() é definida no arquivo "controls.cpp", acesse-o para mais informações sobre a função.
-            restartVars(restart, car.health, road, npcCar, carHood, pieces, score, lamp, night, rain, truck, plane);
+            restartVars(restart, car.health, road, npcCar, carHood, pieces, score, lamp, night, rain, truck, plane, powerUp);
 
             //==========================HIGHSCORE==========================//
             ///Checks if the player has beat the highscore when the game is lost.
@@ -154,7 +155,6 @@ int main(){
             for(int i = 0; i < 2; i++){
                 npcCar[i].pos = {npcCar[i].x, npcCar[i].y, toi((444/2.5)*screen.hScale), toi((212/2.5)*(screen.hScale))};
             }
-
             //==========================DRAWING==========================//
             ///drawSprites() is defined in animations.cpp, open it for more info about the function.
             //drawSprites() é definida no arquivo "animations.cpp", acesse-o para mais informações sobre a função.
@@ -188,6 +188,9 @@ int main(){
                 npcCar[0].x = screen.w + 400;
                 npcCar[1].x = screen.w + 100;
             }
+
+            //==========================POWER-UP==========================//
+            powerUpLoop(render, powerUp, car, screen, pieces, carHood, score, img.powerUp);
 
             //==========================TRUCK==========================//
             if(truck.active){

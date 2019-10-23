@@ -12,6 +12,7 @@
 #include "structs.h"
 #include "toi.h"
 #include <iostream>
+#include "controls.h"
 
 
 ///carBreak():
@@ -28,6 +29,7 @@ void carBreak(CarPiece &piece, Car car, SDL_Renderer *render, SDL_Texture *sprit
         //(Isto é executado apenas uma vez) Define as posições e as velocidades.
         piece.speed.x = (rand() % 5 + 10)*screen.wScale;
         piece.speed.y = (rand() % 10 - 5)*screen.hScale;
+        piece.angle.value = 0;
         piece.angle.speed = rand() % 10 + 30;
         piece.x = car.x + 20;
         piece.y = car.y;
@@ -158,7 +160,6 @@ void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool re
             } else {
                 npcCar[i].y = rand() % (screen.h-100) + 50;
             }
-
             ///Checks if the cars arent too next to each other, in relation to the y-axis:
             //Checa se os carros não estão muito pertos um do outro em relação ao eixo y:
             while(npcCar[i].y > npcCar[(i + 1) % 2].y - 212/2.5 && npcCar[i].y < npcCar[(i + 1) % 2].y + 424/2.5){
@@ -169,7 +170,7 @@ void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool re
 
             ///Sets the speed and the sprite:
             //Seleciona a velocidade e o sprite:
-            npcCar[i].speed.x = (rand() % 10 + 15);
+            npcCar[i].speed.x = (rand() % 8 + 15);
             npcCar[i].skin = rand() % 15;
 
             ///Checks if the cars arent too next to each other, in relation to the x-axis:
@@ -199,6 +200,31 @@ int lampLoop(SDL_Point &lamp, Road road, Screen screen){
         return screen.w + 800;
     }
     return lamp.x - toi(road.speed.x * screen.wScale);
+}
+
+
+void powerUpLoop(SDL_Renderer* render, PowerUp &powerUp, Car &car, Screen screen, CarPiece (&pieces)[3], CarPiece &carHood, int score, SDL_Texture* sprite){
+    if(collide(car.pos, powerUp.pos) && car.health > 0){
+        powerUp.active = false;
+        powerUp.pos = {-1000, -1000, 0, 0};
+        car.health = 3;
+        pieces[0].broke = false;
+        pieces[1].broke = false;
+        pieces[2].broke = false;
+        carHood.broke = false;
+        carHood.x = screen.w + 100;
+        powerUp.start = score + ((rand() % 20) + 30);
+    }
+    if(score == powerUp.start){
+        powerUp.active = true;
+        powerUp.x = (rand() % (screen.w/2)) + (screen.w/4);
+        powerUp.y = -200;
+    }
+    if(powerUp.active){
+        powerUp.y += 8 * screen.hScale;
+        powerUp.pos = {powerUp.x, powerUp.y, toi(64 * screen.hScale), toi(64 * screen.hScale)};
+        SDL_RenderCopy(render, sprite, nullptr, &powerUp.pos);
+    }
 }
 
 
@@ -323,22 +349,22 @@ void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion){
             explosion.spriteCut.x = 0;
         break;
         case 5:
-            explosion.spriteCut.x = 43;//201;
+            explosion.spriteCut.x = 43;
         break;
         case 10:
-            explosion.spriteCut.x = 86;//402;
+            explosion.spriteCut.x = 86;
         break;
         case 15:
-            explosion.spriteCut.x = 129;//603;
+            explosion.spriteCut.x = 129;
         break;
         case 20:
-            explosion.spriteCut.x = 172;//804;
+            explosion.spriteCut.x = 172;
         break;
         case 25:
-            explosion.spriteCut.x = 215;//1005;
+            explosion.spriteCut.x = 215;
         break;
         case 30:
-            explosion.spriteCut.x = 258;//1206;
+            explosion.spriteCut.x = 258;
         break;
         case 35:
             explosion.counter = -1;
@@ -418,6 +444,7 @@ Img initImg(SDL_Renderer* render){
     img.planeShadow = IMG_LoadTexture(render, "img/planeShadow.png");
     img.bombShadow = IMG_LoadTexture(render, "img/bombShadow.png");
     img.bomb = IMG_LoadTexture(render, "img/bomb.png");
+    img.powerUp = IMG_LoadTexture(render, "img/fixer.png");
     return img;
 }
 
@@ -453,6 +480,7 @@ void destroy(SDL_Window* mainWindow, SDL_Renderer* render, Img &img){
     SDL_DestroyTexture(img.planeShadow);
     SDL_DestroyTexture(img.bombShadow);
     SDL_DestroyTexture(img.bomb);
+    SDL_DestroyTexture(img.powerUp);
     SDL_DestroyRenderer(render);
     SDL_DestroyWindow(mainWindow);
 }

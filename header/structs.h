@@ -30,6 +30,7 @@ struct Img {
     SDL_Texture* planeShadow;
     SDL_Texture* bombShadow;
     SDL_Texture* bomb;
+    SDL_Texture* powerUp;
 };
 
 struct Debug {
@@ -72,6 +73,14 @@ struct NPCCar {
     int skin;
     Speed speed;
     SDL_Rect cut;
+    SDL_Rect pos;
+};
+
+struct PowerUp {
+    int x;
+    int y;
+    int start;
+    bool active;
     SDL_Rect pos;
 };
 

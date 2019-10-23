@@ -16,16 +16,6 @@ SOURCES += src/menu.cpp
 SOURCES += src/text.cpp
 SOURCES += src/toi.cpp
 
-win32: LIBS += -L$$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/lib/ -lSDL2
-
-INCLUDEPATH += $$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/include
-DEPENDPATH += $$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/include
-
-win32: LIBS += -L$$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/lib/ -lSDL2_image
-
-INCLUDEPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
-DEPENDPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
-
 
 HEADERS += header/animations.h \
     header/boss.h \
@@ -43,3 +33,13 @@ INCLUDEPATH += :/res/img
 RESOURCES +=
 
 DISTFILES +=
+
+win32: LIBS += -L$$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/lib/ -lSDL2
+
+INCLUDEPATH += $$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/include
+DEPENDPATH += $$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/include
+
+win32: LIBS += -L$$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/lib/ -lSDL2_image
+
+INCLUDEPATH += $$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/include
+DEPENDPATH += $$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/include

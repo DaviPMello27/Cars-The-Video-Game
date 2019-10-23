@@ -9,6 +9,8 @@ void NPCCarLoop(NPCCar (&npcCar)[2], int &score, Screen screen, Car car, bool re
 
 int lampLoop(SDL_Point &lampPosition, Road road, Screen screen);
 
+void powerUpLoop(SDL_Renderer* render, PowerUp &powerUp, Car &car, Screen screen, CarPiece (&pieces)[3], CarPiece &carHood, int score, SDL_Texture* sprite);
+
 void drawCursor(SDL_Renderer *renderer, SDL_Point mousePosition, SDL_Texture *cursor);
 
 void drawAnimation(SDL_Renderer *renderer, CarPiece (&pieces)[3], Car car, CarPiece &carHood, Img images, Screen screen);

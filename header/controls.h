@@ -5,7 +5,7 @@
 
 void eventCheck(SDL_Window* window, bool &endFlag, bool &restartFlag, int &highscore, int &carHealth, Menu &menu, SDL_Point mousePosition, Screen &screen, Debug &debug, Rain &rain, Night &night, int &score);
 
-void restartVars(bool &restartFlag, int &carHealth, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lampPosition, Night &night, Rain &rain, Boss &truck, Boss &plane);
+void restartVars(bool &restartFlag, int &carHealth, Road &road, NPCCar (&npcCar)[2], CarPiece &carHood, CarPiece (&pieces)[3], int &score, SDL_Point &lampPosition, Night &night, Rain &rain, Boss &truck, Boss &plane, PowerUp &powerUp);
 
 SDL_Point getMouseXY(SDL_Point mousePosition);
 
