@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - 22/10/2019                            ///
+///                            09/09/2019 - 24/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -381,6 +381,14 @@ bool carCollision(Car &car, NPCCar (&npcCar)[2], Screen screen, Animation &explo
     }
     return false;
 }
+
+///changeHitbox():
+///
+///Adapts the cars' hitbox to the sprites.
+
+//changeHitbox():
+//
+//Adapta a hitbox dos carros aos sprites.
 
 void changeHitbox(SDL_Point mouse, Car &car, NPCCar (&npcCar)[2]){
     ///Decreases the player's car's hitbox's width based on the angle, to adapt to the sprite.

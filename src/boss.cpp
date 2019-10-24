@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - 22/10/2019                            ///
+///                            09/09/2019 - 24/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -15,7 +15,13 @@
 #include "controls.h"
 #include "animations.h"
 
+///truckBehavior():
+///
+///Applies the movement and attack patterns of the truck.
 
+//rtuckBehavior():
+//
+//Aplica os movimentos e os padrões de ataque do caminhão.
 
 void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen screen, int &score){
     ///Defines the initial variables:
@@ -115,6 +121,14 @@ void truckBehavior(SDL_Renderer* render, Boss &truck, Img img, Car &car, Screen 
     SDL_RenderCopy(render, img.truckSprite, &truck.cut, &truck.pos);
 }
 
+///planeBehavior():
+///
+///Applies the movement and attack patterns of the airplane.
+
+//planeBehavior():
+//
+//Aplica os movimentos e os padrões de ataque do avião.
+
 void planeBehavior(SDL_Renderer* render, Boss &plane, SDL_RendererFlip &planeFlip, Animation &bomb, Animation &explosion, Img img, Car &car, Screen screen, int &score){
     ///Defines the initial variables:
     //Define as variáveis iniciais:
@@ -194,8 +208,8 @@ void planeBehavior(SDL_Renderer* render, Boss &plane, SDL_RendererFlip &planeFli
         bomb.spritePos.w *= 1.08;
         bomb.spritePos.x -= bomb.spritePos.w * 0.02;
         bomb.spritePos.y -= bomb.spritePos.h * 0.02;
-        bomb.spritePos.x += bomb.speed.x;
-        bomb.spritePos.y += bomb.speed.y;
+        bomb.spritePos.x += bomb.speed.x * screen.hScale;
+        bomb.spritePos.y += bomb.speed.y * screen.hScale;
         SDL_RenderCopyEx(render, img.bombShadow, nullptr, &bomb.spritePos, 0, nullptr, planeFlip);
     ///Then the bomb's positions and dimensions are prepared to start decreasing in size:
     //Então, as posições e dimensões da bomba são preparadas para começar a diminuir em tamanho:
@@ -204,8 +218,8 @@ void planeBehavior(SDL_Renderer* render, Boss &plane, SDL_RendererFlip &planeFli
         bomb.spritePos.y -= bomb.spritePos.h;
         bomb.spritePos.h = 950;
         bomb.spritePos.w = 1450;
-        bomb.spritePos.x += bomb.speed.x;
-        bomb.spritePos.y += bomb.speed.y;
+        bomb.spritePos.x += bomb.speed.x * screen.hScale;
+        bomb.spritePos.y += bomb.speed.y * screen.hScale;
     ///Then the bomb starts increasing in size and the position increases to compensate:
     //Então a bomba começa a diminuir em tamanho e a posição aumenta para compensar:
     } else if (bomb.counter < 40 && bomb.counter > 0){
@@ -213,8 +227,8 @@ void planeBehavior(SDL_Renderer* render, Boss &plane, SDL_RendererFlip &planeFli
         bomb.spritePos.w /= 1.08;
         bomb.spritePos.x += bomb.spritePos.w * 0.02 + 1;
         bomb.spritePos.y += bomb.spritePos.h * 0.02 + 1;
-        bomb.spritePos.x += bomb.speed.x;
-        bomb.spritePos.y += bomb.speed.y;
+        bomb.spritePos.x += bomb.speed.x * screen.hScale;
+        bomb.spritePos.y += bomb.speed.y * screen.hScale;
         SDL_RenderCopyEx(render, img.bomb, nullptr, &bomb.spritePos, 0, nullptr, planeFlip);
     ///When it hits the ground, the explosion's variables are prepared to execute the animation:
     //Quando atinge o chão, as variáveis da explosão são preparadas para executar a animação:

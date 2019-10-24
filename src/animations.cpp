@@ -1,5 +1,5 @@
 //////========----------------CARS: THE MOVIE: THE GAME----------------========//////
-///                            09/09/2019 - 22/10/2019                            ///
+///                            09/09/2019 - 24/10/2019                            ///
 ///                             COPYRIGHT DAVI MELLO                              ///
 //////========---------------------------------------------------------========//////
 
@@ -202,6 +202,13 @@ int lampLoop(SDL_Point &lamp, Road road, Screen screen){
     return lamp.x - toi(road.speed.x * screen.wScale);
 }
 
+///powerUpLoop():
+///
+///Determines when and how the power-up will spawn.
+
+//powerUpLoop():
+//
+//Determina quando e como o power-up vai aparecer.
 
 void powerUpLoop(SDL_Renderer* render, PowerUp &powerUp, Car &car, Screen screen, CarPiece (&pieces)[3], CarPiece &carHood, int score, SDL_Texture* sprite){
     if(collide(car.pos, powerUp.pos) && car.health > 0){
@@ -375,6 +382,15 @@ void explodeAnimation(SDL_Renderer *render, Img img, Animation &explosion){
     SDL_RenderCopy(render, img.explosion, &explosion.spriteCut, &explosion.spritePos);
 }
 
+///toggleNight():
+///
+///Toggles nighttime every 80 points.
+
+
+//toggleNight():
+//
+//Alterna entre dia e noite a cada 80 pontos.
+
 void toggleNight(Night &night, int score){
     if(score % 160 >= 80 && night.threshold < 135){
         night.threshold++;
@@ -387,6 +403,15 @@ void toggleNight(Night &night, int score){
         night.active = false;
     }
 }
+
+///toggleRain():
+///
+///Toggles rain randomly.
+
+
+//toggleRain():
+//
+//Ativa e desativa a chuva aleatoriamente.
 
 void toggleRain(SDL_Renderer* render, Rain &rain, SDL_Texture* sprite, int score){
     if(score == rain.start && rain.active == false){
