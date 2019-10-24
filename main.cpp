@@ -38,10 +38,6 @@ int main(){
     SDL_Init(SDL_INIT_EVERYTHING);
     IMG_Init(IMG_INIT_PNG);
     SDL_Window *mainWindow = SDL_CreateWindow("Cars: The Movie: The Game", 20, 20, 800, 600, 0);
-
-    ///SDL_SetWindowDisplayMode() to set the window's display mode to default to prevent refresh rate issues.
-    //SDL_SetWindowDisplayMode() para definir o modo de display da janela, para previnir problemas com o taxa de atualização do monitor.
-    SDL_SetWindowDisplayMode(mainWindow, nullptr);
     SDL_Renderer *render = SDL_CreateRenderer(mainWindow, -1, 0);// SDL_RENDERER_ACCELERATED);
 
     ///Defining the seed to the random ints using the current time.

@@ -4,7 +4,18 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 RC_FILE += img/iconSet.rc
-RC_FILE += resource.rc
+
+
+win32: LIBS += -L$$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/lib/ -lSDL2
+
+INCLUDEPATH += $$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/include
+DEPENDPATH += $$PWD/../../../SDL/SDL2-2.0.10/x86_64-w64-mingw32/include
+
+win32: LIBS += -L$$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/lib/ -lSDL2_image
+
+INCLUDEPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
+DEPENDPATH += $$PWD/../../../SDL/SDL2_image-2.0.5/x86_64-w64-mingw32/include
+
 
 SOURCES += main.cpp \
     src/boss.cpp \
@@ -28,18 +39,7 @@ HEADERS += header/structs.h
 HEADERS += header/toi.h
 
 INCLUDEPATH += header
-INCLUDEPATH += :/res/img
 
 RESOURCES +=
 
 DISTFILES +=
-
-win32: LIBS += -L$$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/lib/ -lSDL2
-
-INCLUDEPATH += $$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/include
-DEPENDPATH += $$PWD/../../Downloads/SDL2-2.0.10/i686-w64-mingw32/include
-
-win32: LIBS += -L$$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/lib/ -lSDL2_image
-
-INCLUDEPATH += $$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/include
-DEPENDPATH += $$PWD/../../Downloads/SDL2_image-2.0.5/i686-w64-mingw32/include
